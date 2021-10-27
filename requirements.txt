@@ -1,0 +1,3 @@
+apache-skywalking~=0.7.0
+nopdb~=0.1.0
+pyhumps~=3.0.2
