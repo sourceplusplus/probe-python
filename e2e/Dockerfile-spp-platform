@@ -1,0 +1,6 @@
+FROM sourceplusplus/spp-platform:0.1.19
+
+ADD ./config/logback.xml /opt/sourceplusplus/config
+ADD ./config/spp-platform.crt /opt/sourceplusplus/config
+ADD ./config/spp-platform.key /opt/sourceplusplus/config
+ADD ./config/spp-platform.yml /opt/sourceplusplus/config
