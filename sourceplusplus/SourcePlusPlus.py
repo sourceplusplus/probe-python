@@ -26,7 +26,7 @@ class SourcePlusPlus(object):
             return true_default
 
     def __init__(self, **kwargs):
-        probe_config = yaml.full_load(open("/home/brandon/PycharmProjects/probe-python/e2e/spp-probe.yml", "r"))
+        probe_config = yaml.full_load(open("config/spp-probe.yml", "r"))
         probe_config["spp"]["platform_host"] = self.get_config_value(
             "SPP_PLATFORM_HOST", probe_config["spp"]["platform_host"], "localhost"
         )
