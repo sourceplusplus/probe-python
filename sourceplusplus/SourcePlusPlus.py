@@ -27,7 +27,16 @@ class SourcePlusPlus(object):
             return true_default
 
     def __init__(self, **kwargs):
-        probe_config = yaml.full_load(open("config/spp-probe.yml", "r"))
+        probe_config_file = os.getenv("SPP_PROBE_CONFIG_FILE", "spp-probe.yml")
+        probe_config = {}
+        if os.path.exists(probe_config_file):
+            probe_config = yaml.full_load(open(probe_config_file, "r"))
+        else:
+            probe_config["spp"] = {}
+            probe_config["skywalking"] = {}
+            probe_config["skywalking"]["collector"] = {}
+            probe_config["skywalking"]["agent"] = {}
+
         probe_config["spp"]["probe_id"] = self.get_config_value(
             "SPP_PROBE_ID", probe_config["spp"].get("probe_id"), str(uuid.uuid4())
         )
@@ -70,7 +79,7 @@ class SourcePlusPlus(object):
 
         ssl_ctx = ssl.create_default_context(cadata=ca_data)
         ssl_ctx.check_hostname = self.probe_config["spp"]["verify_host"]
-        ssl_ctx.verify_mode = ssl.CERT_NONE
+        ssl_ctx.verify_mode = ssl.CERT_OPTIONAL  # todo: CERT_REQUIRED / load_verify_locations ?
         eb = EventBus(
             host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
             ssl_context=ssl_ctx
