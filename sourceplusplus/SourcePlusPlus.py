@@ -79,7 +79,8 @@ class SourcePlusPlus(object):
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
             log_reporter_active=True,
-            force_tls=True
+            force_tls=True,
+            log_reporter_formatted=False
         )
         agent.start()
 
