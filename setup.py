@@ -11,4 +11,5 @@ setup(name='sourceplusplus',
       packages=setuptools.find_packages(),
       install_requires=['apache-skywalking>=0.7.0',
                         'nopdb>=0.1.0',
-                        'pyhumps>=3.0.2'])
+                        'pyhumps>=3.0.2',
+                        'PyYAML>=6.0'])

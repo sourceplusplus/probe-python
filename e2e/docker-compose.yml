@@ -12,9 +12,12 @@ services:
     environment:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_SKYWALKING_HOST=skywalking-oap
+      - GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/usr/local/bin/config/spp-platform.crt
   spp-platform:
-    image: sourceplusplus/spp-platform:0.1.19
     container_name: spp-platform
+    build:
+      context: .
+      dockerfile: Dockerfile-spp-platform
     hostname: spp-platform
     ports:
       - "5445:5445"
@@ -29,29 +32,38 @@ services:
       - SPP_CLUSTER_NAME=docker
       - SPP_REDIS_HOST=redis
       - SPP_SKYWALKING_HOST=skywalking-oap
-      - SPP_DISABLE_TLS=true
-      - SPP_DISABLE_JWT=true
   redis:
     image: redis:6.2.1
     container_name: redis
     hostname: redis
   skywalking-oap:
-    image: sourceplusplus/spp-oap-server:0.1.19
     container_name: skywalking-oap
+    build:
+      context: .
+      dockerfile: Dockerfile-spp-oap-server
     hostname: skywalking-oap
     ports:
       - "11800:11800"
     depends_on:
       - es-server
+      - spp-platform
     links:
       - es-server
+      - spp-platform
     restart: on-failure
     environment:
       - SW_STORAGE=elasticsearch7
       - SW_STORAGE_ES_CLUSTER_NODES=es-server:9200
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_PLATFORM_PORT=5460
-      - SPP_DISABLE_TLS=true
+      - SPP_PLATFORM_CERTIFICATE_FILE=/skywalking/spp-platform.crt
+      - SW_CORE_GRPC_SSL_ENABLED=true
+      - SW_CORE_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
+      - SW_CORE_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
+      - SW_CORE_GRPC_SSL_TRUSTED_CA_PATH=/skywalking/spp-platform.crt
+      - SW_RECEIVER_GRPC_SSL_ENABLED=true
+      - SW_RECEIVER_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
+      - SW_RECEIVER_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
   es-server:
     image: blacktop/elasticsearch:7.0.0
     container_name: es-server
