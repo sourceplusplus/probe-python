@@ -12,6 +12,9 @@ services:
     environment:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_SKYWALKING_HOST=skywalking-oap
+      - SW_AGENT_FORCE_TLS=True
+#      - GRPC_SSL_TARGET_NAME_OVERRIDE_ARG=skywalking-oap
+      - GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/usr/local/bin/config/spp-platform.crt
   spp-platform:
     container_name: spp-platform
     build:
@@ -46,8 +49,10 @@ services:
       - "11800:11800"
     depends_on:
       - es-server
+      - spp-platform
     links:
       - es-server
+      - spp-platform
     restart: on-failure
     environment:
       - SW_STORAGE=elasticsearch7

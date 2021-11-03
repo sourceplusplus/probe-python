@@ -63,7 +63,7 @@ class SourcePlusPlus(object):
                 "check_hostname": self.probe_config["spp"]["verify_host"]
             }}
 
-        ssl_ctx = ssl.create_default_context()
+        ssl_ctx = ssl.create_default_context(cadata=options["ssl_options"]["ca_data"])
         ssl_ctx.check_hostname = False
         ssl_ctx.verify_mode = ssl.CERT_NONE
         eb = EventBus(
@@ -77,7 +77,8 @@ class SourcePlusPlus(object):
         config.init(
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.service_name,
-            log_reporter_active=True
+            log_reporter_active=True,
+            force_tls=True
         )
         agent.start()
 
