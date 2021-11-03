@@ -1,5 +1,6 @@
 import json
 import os
+import ssl
 import sys
 import time
 import uuid
@@ -56,9 +57,12 @@ class SourcePlusPlus(object):
                 "check_hostname": self.probe_config["spp"]["verify_host"]
             }}
 
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
         eb = EventBus(
             host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
-            options=options
+            ssl_context=ssl_ctx
         )
         eb.connect()
         self.__send_connected(eb)
