@@ -62,7 +62,8 @@ class SourcePlusPlus(object):
 
     def attach(self):
         ca_data = None
-        if not os.getenv("SPP_DISABLE_TLS", False) and self.probe_config["spp"].get("probe_certificate") is not None:
+        if self.probe_config["spp"]["disable_tls"] is False \
+                and self.probe_config["spp"].get("probe_certificate") is not None:
             ca_data = "-----BEGIN CERTIFICATE-----\n" + \
                       self.probe_config["spp"]["probe_certificate"] + \
                       "\n-----END CERTIFICATE-----"
