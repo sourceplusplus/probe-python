@@ -14,4 +14,7 @@ RUN pip install sourceplusplus-0.1.0.tar.gz
 
 COPY E2ETest.py .
 
+RUN mkdir config
+ADD ./spp-probe.yml ./config/
+
 CMD ["python", "E2ETest.py"]

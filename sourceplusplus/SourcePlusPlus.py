@@ -4,6 +4,7 @@ import sys
 import time
 import uuid
 
+import yaml
 from skywalking import config, agent
 from vertx import EventBus
 
@@ -15,19 +16,50 @@ from .models.instrument.common.LiveInstrumentType import LiveInstrumentType
 
 class SourcePlusPlus(object):
 
+    def get_config_value(self, env, default, true_default):
+        env_value = os.getenv(env)
+        if env_value is not None:
+            return env_value
+        elif default is not None:
+            return default
+        else:
+            return true_default
+
     def __init__(self, **kwargs):
+        probe_config = yaml.full_load(open("/home/brandon/PycharmProjects/probe-python/e2e/spp-probe.yml", "r"))
+        probe_config["spp"]["platform_host"] = self.get_config_value(
+            "SPP_PLATFORM_HOST", probe_config["spp"]["platform_host"], "localhost"
+        )
+        probe_config["spp"]["platform_port"] = self.get_config_value(
+            "SPP_PLATFORM_PORT", probe_config["spp"]["platform_port"], 5450
+        )
+        probe_config["spp"]["verify_host"] = self.get_config_value(
+            "SPP_TLS_VERIFY_HOST", probe_config["spp"]["verify_host"], True
+        )
+        self.probe_config = probe_config
+
         self.instrument_remote = None
         self.probe_id = os.getenv("SPP_PROBE_ID", str(uuid.uuid4()))
         self.service_name = os.getenv("SPP_SERVICE_NAME", "python")
-        self.spp_host = os.getenv("SPP_PLATFORM_HOST", "localhost")
-        self.spp_port = os.getenv("SPP_PLATFORM_PORT", 5450)
         self.skywalking_host = os.getenv("SPP_SKYWALKING_HOST", "localhost")
         self.skywalking_port = os.getenv("SPP_SKYWALKING_PORT", 11800)
         for key, val in kwargs.items():
             self.__dict__[key] = val
 
     def attach(self):
-        eb = EventBus(host=self.spp_host, port=self.spp_port)
+        options = {}
+        if not os.getenv("SPP_DISABLE_TLS", False):
+            options = {"ssl_options": {
+                "ca_data": "-----BEGIN CERTIFICATE-----\n" +
+                           self.probe_config["spp"]["platform_certificate"] +
+                           "\n-----END CERTIFICATE-----",
+                "check_hostname": self.probe_config["spp"]["verify_host"]
+            }}
+
+        eb = EventBus(
+            host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
+            options=options
+        )
         eb.connect()
         self.__send_connected(eb)
         self.instrument_remote = LiveInstrumentRemote(eb)
