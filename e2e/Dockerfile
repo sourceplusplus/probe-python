@@ -3,6 +3,7 @@ FROM python:3.10
 WORKDIR /usr/local/bin
 
 RUN pip install Flask
+RUN pip install PyYAML
 
 COPY vertx-eventbus-client-1.0.0.dev0.tar.gz .
 
