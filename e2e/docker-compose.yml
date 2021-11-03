@@ -35,8 +35,10 @@ services:
     container_name: redis
     hostname: redis
   skywalking-oap:
-    image: sourceplusplus/spp-oap-server:0.1.19
     container_name: skywalking-oap
+    build:
+      context: .
+      dockerfile: Dockerfile-spp-oap-server
     hostname: skywalking-oap
     ports:
       - "11800:11800"
@@ -50,6 +52,14 @@ services:
       - SW_STORAGE_ES_CLUSTER_NODES=es-server:9200
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_PLATFORM_PORT=5460
+      - SPP_PLATFORM_CERTIFICATE_FILE=/skywalking/spp-platform.crt
+      - SW_CORE_GRPC_SSL_ENABLED=true
+      - SW_CORE_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
+      - SW_CORE_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
+      - SW_CORE_GRPC_SSL_TRUSTED_CA_PATH=/skywalking/spp-platform.crt
+      - SW_RECEIVER_GRPC_SSL_ENABLED=true
+      - SW_RECEIVER_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
+      - SW_RECEIVER_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
   es-server:
     image: blacktop/elasticsearch:7.0.0
     container_name: es-server
