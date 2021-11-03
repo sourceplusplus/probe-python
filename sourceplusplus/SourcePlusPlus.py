@@ -40,6 +40,9 @@ class SourcePlusPlus(object):
         probe_config["spp"]["verify_host"] = self.get_config_value(
             "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
         )
+        probe_config["spp"]["disable_tls"] = self.get_config_value(
+            "SPP_DISABLE_TLS", probe_config["spp"].get("disable_tls"), False
+        )
         probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
             "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "Python Service"
         )
@@ -79,7 +82,7 @@ class SourcePlusPlus(object):
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
             log_reporter_active=True,
-            force_tls=True,
+            force_tls=self.probe_config["spp"]["disable_tls"] is not True,
             log_reporter_formatted=False
         )
         agent.start()
