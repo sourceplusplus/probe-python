@@ -28,28 +28,32 @@ class SourcePlusPlus(object):
 
     def __init__(self, **kwargs):
         probe_config = yaml.full_load(open("config/spp-probe.yml", "r"))
+        probe_config["spp"]["probe_id"] = self.get_config_value(
+            "SPP_PROBE_ID", probe_config["spp"].get("probe_id"), str(uuid.uuid4())
+        )
         probe_config["spp"]["platform_host"] = self.get_config_value(
-            "SPP_PLATFORM_HOST", probe_config["spp"]["platform_host"], "localhost"
+            "SPP_PLATFORM_HOST", probe_config["spp"].get("platform_host"), "localhost"
         )
         probe_config["spp"]["platform_port"] = self.get_config_value(
-            "SPP_PLATFORM_PORT", probe_config["spp"]["platform_port"], 5450
+            "SPP_PLATFORM_PORT", probe_config["spp"].get("platform_port"), 5450
         )
         probe_config["spp"]["verify_host"] = self.get_config_value(
-            "SPP_TLS_VERIFY_HOST", probe_config["spp"]["verify_host"], True
+            "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
+        )
+        probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
+            "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "Python Service"
         )
 
         skywalking_host = self.get_config_value("SPP_SKYWALKING_HOST", "localhost", "localhost")
         skywalking_port = self.get_config_value("SPP_SKYWALKING_PORT", 11800, 11800)
         probe_config["skywalking"]["collector"]["backend_service"] = self.get_config_value(
             "SPP_SKYWALKING_BACKEND_SERVICE",
-            probe_config["skywalking"]["collector"]["backend_service"],
+            probe_config["skywalking"]["collector"].get("backend_service"),
             skywalking_host + ":" + str(skywalking_port)
         )
         self.probe_config = probe_config
 
         self.instrument_remote = None
-        self.probe_id = os.getenv("SPP_PROBE_ID", str(uuid.uuid4()))
-        self.service_name = os.getenv("SPP_SERVICE_NAME", "python")
         for key, val in kwargs.items():
             self.__dict__[key] = val
 
@@ -76,22 +80,30 @@ class SourcePlusPlus(object):
 
         config.init(
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
-            service_name=self.service_name,
+            service_name=self.probe_config["skywalking"]["agent"]["service_name"],
             log_reporter_active=True,
             force_tls=True
         )
         agent.start()
 
     def __send_connected(self, eb: EventBus):
+        probe_metadata = {
+            "language": "python",
+            "probe_version": __version__,
+            "python_version": sys.version
+        }
+
+        # add hardcoded probe meta data (if present)
+        if self.probe_config["spp"].get("probe_metadata") is not None:
+            for key, val in self.probe_config["spp"].get("probe_metadata").items():
+                probe_metadata[key] = val
+
+        # send probe connected event
         reply_address = str(uuid.uuid4())
         eb.send(address="spp.platform.status.probe-connected", body={
-            "probeId": self.probe_id,
+            "probeId": self.probe_config["spp"]["probe_id"],
             "connectionTime": round(time.time() * 1000),
-            "meta": {
-                "language": "python",
-                "probe_version": __version__,
-                "python_version": sys.version
-            }
+            "meta": probe_metadata
         }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, msg["body"]["value"]))
 
     def __register_remotes(self, eb, reply_address, status):
