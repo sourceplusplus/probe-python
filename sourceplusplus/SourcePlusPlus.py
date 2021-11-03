@@ -37,13 +37,19 @@ class SourcePlusPlus(object):
         probe_config["spp"]["verify_host"] = self.get_config_value(
             "SPP_TLS_VERIFY_HOST", probe_config["spp"]["verify_host"], True
         )
+
+        skywalking_host = self.get_config_value("SPP_SKYWALKING_HOST", "localhost", "localhost")
+        skywalking_port = self.get_config_value("SPP_SKYWALKING_PORT", 11800, 11800)
+        probe_config["skywalking"]["collector"]["backend_service"] = self.get_config_value(
+            "SPP_SKYWALKING_BACKEND_SERVICE",
+            probe_config["skywalking"]["collector"]["backend_service"],
+            skywalking_host + ":" + str(skywalking_port)
+        )
         self.probe_config = probe_config
 
         self.instrument_remote = None
         self.probe_id = os.getenv("SPP_PROBE_ID", str(uuid.uuid4()))
         self.service_name = os.getenv("SPP_SERVICE_NAME", "python")
-        self.skywalking_host = os.getenv("SPP_SKYWALKING_HOST", "localhost")
-        self.skywalking_port = os.getenv("SPP_SKYWALKING_PORT", 11800)
         for key, val in kwargs.items():
             self.__dict__[key] = val
 
@@ -69,7 +75,7 @@ class SourcePlusPlus(object):
         self.instrument_remote = LiveInstrumentRemote(eb)
 
         config.init(
-            collector_address=self.skywalking_host + ':' + str(self.skywalking_port),
+            collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.service_name,
             log_reporter_active=True
         )
