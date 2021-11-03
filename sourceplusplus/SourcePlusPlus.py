@@ -58,17 +58,14 @@ class SourcePlusPlus(object):
             self.__dict__[key] = val
 
     def attach(self):
-        options = {}
-        if not os.getenv("SPP_DISABLE_TLS", False):
-            options = {"ssl_options": {
-                "ca_data": "-----BEGIN CERTIFICATE-----\n" +
-                           self.probe_config["spp"]["platform_certificate"] +
-                           "\n-----END CERTIFICATE-----",
-                "check_hostname": self.probe_config["spp"]["verify_host"]
-            }}
+        ca_data = None
+        if not os.getenv("SPP_DISABLE_TLS", False) and self.probe_config["spp"].get("probe_certificate") is not None:
+            ca_data = "-----BEGIN CERTIFICATE-----\n" + \
+                      self.probe_config["spp"]["probe_certificate"] + \
+                      "\n-----END CERTIFICATE-----"
 
-        ssl_ctx = ssl.create_default_context(cadata=options["ssl_options"]["ca_data"])
-        ssl_ctx.check_hostname = False
+        ssl_ctx = ssl.create_default_context(cadata=ca_data)
+        ssl_ctx.check_hostname = self.probe_config["spp"]["verify_host"]
         ssl_ctx.verify_mode = ssl.CERT_NONE
         eb = EventBus(
             host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
