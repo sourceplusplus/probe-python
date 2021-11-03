@@ -79,7 +79,7 @@ class SourcePlusPlus(object):
 
         ssl_ctx = ssl.create_default_context(cadata=ca_data)
         ssl_ctx.check_hostname = self.probe_config["spp"]["verify_host"]
-        ssl_ctx.verify_mode = ssl.CERT_OPTIONAL  # todo: CERT_REQUIRED / load_verify_locations ?
+        ssl_ctx.verify_mode = ssl.CERT_NONE  # todo: CERT_REQUIRED / load_verify_locations ?
         eb = EventBus(
             host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
             ssl_context=ssl_ctx
