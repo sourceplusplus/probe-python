@@ -13,8 +13,10 @@ services:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_SKYWALKING_HOST=skywalking-oap
   spp-platform:
-    image: sourceplusplus/spp-platform:0.1.19
     container_name: spp-platform
+    build:
+      context: .
+      dockerfile: Dockerfile-spp-platform
     hostname: spp-platform
     ports:
       - "5445:5445"
