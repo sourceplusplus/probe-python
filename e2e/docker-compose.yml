@@ -29,7 +29,6 @@ services:
       - SPP_CLUSTER_NAME=docker
       - SPP_REDIS_HOST=redis
       - SPP_SKYWALKING_HOST=skywalking-oap
-      - SPP_DISABLE_TLS=true
       - SPP_DISABLE_JWT=true
   redis:
     image: redis:6.2.1
@@ -51,7 +50,6 @@ services:
       - SW_STORAGE_ES_CLUSTER_NODES=es-server:9200
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_PLATFORM_PORT=5460
-      - SPP_DISABLE_TLS=true
   es-server:
     image: blacktop/elasticsearch:7.0.0
     container_name: es-server
