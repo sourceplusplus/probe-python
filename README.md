@@ -8,11 +8,9 @@
 
 This project provides Python support to the [Source++](https://github.com/sourceplusplus/live-platform) open-source live coding platform.
 
-# Installation
-
-- `pip install sourceplusplus`
-
 # Usage
+
+- Installation: `pip install sourceplusplus`
 
 ```sh
 todo
