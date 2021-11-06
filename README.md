@@ -10,12 +10,4 @@ This project provides Python support to the [Source++](https://github.com/source
 
 # Usage
 
-- Installation: `pip install sourceplusplus`
-
-```sh
-todo
-```
-
-# Documentation
-
-- todo
+- `pip install sourceplusplus`
