@@ -70,6 +70,15 @@ class SourcePlusPlus(object):
             self.__dict__[key] = val
 
     def attach(self):
+        config.init(
+            collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
+            service_name=self.probe_config["skywalking"]["agent"]["service_name"],
+            log_reporter_active=True,
+            force_tls=self.probe_config["spp"]["disable_tls"] is False,
+            log_reporter_formatted=False
+        )
+        agent.start()
+
         ca_data = None
         if self.probe_config["spp"]["disable_tls"] is False \
                 and self.probe_config["spp"].get("probe_certificate") is not None:
@@ -88,20 +97,13 @@ class SourcePlusPlus(object):
         self.__send_connected(eb)
         self.instrument_remote = LiveInstrumentRemote(eb)
 
-        config.init(
-            collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
-            service_name=self.probe_config["skywalking"]["agent"]["service_name"],
-            log_reporter_active=True,
-            force_tls=self.probe_config["spp"]["disable_tls"] is False,
-            log_reporter_formatted=False
-        )
-        agent.start()
-
     def __send_connected(self, eb: EventBus):
         probe_metadata = {
             "language": "python",
             "probe_version": __version__,
-            "python_version": sys.version
+            "python_version": sys.version,
+            "service": config.service_name,
+            "service_instance": config.service_instance
         }
 
         # add hardcoded probe meta data (if present)
