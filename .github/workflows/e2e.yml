@@ -3,8 +3,14 @@ name: E2E Tests
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
 
 jobs:
   e2e:
@@ -45,41 +51,41 @@ jobs:
 
       - name: Live breakpoint (false condition)
         run: |
-          spp-cli developer add-live-breakpoint -c 1==2 E2ETest.py 19
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer add-live-breakpoint -c 1==2 E2ETest.py 19
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          spp-cli developer clear-live-instruments
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer clear-live-instruments
 
       - name: Live log (false condition)
         run: |
-          spp-cli developer add-live-log -c 1==2 -l provider E2ETest.py 19 Hello {}
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer add-live-log -c 1==2 -l provider E2ETest.py 19 Hello {}
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          spp-cli developer clear-live-instruments
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer clear-live-instruments
 
       - name: Live breakpoint (hit limit = 2)
         run: |
-          spp-cli developer add-live-breakpoint -hitLimit 2 E2ETest.py 19
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer add-live-breakpoint -hitLimit 2 E2ETest.py 19
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
 
       - name: Live log (hit limit = 2)
         run: |
-          spp-cli developer add-live-log -hitLimit 2 -l provider E2ETest.py 19 Hello {}
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli -a change-me developer add-live-log -hitLimit 2 -l provider E2ETest.py 19 Hello {}
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli -a change-me developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
 
       - name: Docker logs
         run: cd e2e && docker-compose logs -t --tail="all"

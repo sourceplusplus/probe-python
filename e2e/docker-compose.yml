@@ -32,6 +32,7 @@ services:
       - SPP_CLUSTER_NAME=docker
       - SPP_REDIS_HOST=redis
       - SPP_SKYWALKING_HOST=skywalking-oap
+      - SPP_SYSTEM_ACCESS_TOKEN=change-me
   redis:
     image: redis:6.2.1
     container_name: redis
