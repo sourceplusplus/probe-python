@@ -1,4 +1,4 @@
-FROM sourceplusplus/spp-platform:0.1.19
+FROM sourceplusplus/spp-platform:latest
 
 ADD ./config/logback.xml /opt/sourceplusplus/config
 ADD ./config/spp-platform.crt /opt/sourceplusplus/config

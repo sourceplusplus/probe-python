@@ -122,13 +122,13 @@ class SourcePlusPlus(object):
     def __register_remotes(self, eb, reply_address, status):
         eb.unregister_handler(reply_address)
         eb.register_handler(
-            address="spp.probe.command.live-breakpoint-remote",
+            address="spp.probe.command.live-breakpoint-remote:" + self.probe_config["spp"]["probe_id"],
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
                 LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.BREAKPOINT
             )
         )
         eb.register_handler(
-            address="spp.probe.command.live-log-remote",
+            address="spp.probe.command.live-log-remote:" + self.probe_config["spp"]["probe_id"],
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
                 LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.LOG
             )
