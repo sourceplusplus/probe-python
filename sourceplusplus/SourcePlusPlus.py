@@ -53,7 +53,7 @@ class SourcePlusPlus(object):
             "SPP_DISABLE_TLS", probe_config["spp"].get("disable_tls"), False
         )
         probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
-            "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "Python Service"
+            "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "spp"
         )
 
         skywalking_host = self.get_config_value("SPP_SKYWALKING_HOST", "localhost", "localhost")

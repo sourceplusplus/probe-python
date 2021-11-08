@@ -10,6 +10,6 @@ skywalking:
   agent:
     is_cache_enhanced_class: true
     class_cache_mode: "FILE"
-    service_name: "appUuid"
+    service_name: "spp"
   collector:
     backend_service: "skywalking-oap:11800"
