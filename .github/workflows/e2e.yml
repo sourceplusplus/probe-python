@@ -39,43 +39,47 @@ jobs:
         run: |
           resp=$(curl --header "Authorization: Bearer ${{ env.SPP_JWT_TOKEN }}" --insecure https://localhost:5445/clients) && [[ $(echo $resp | jq -r ."probes"[0]."meta"."language") == "python" ]] && echo $resp || (echo $resp && exit 1)
 
+      - name: Download & install spp-cli
+        run: |
+          curl -O -J -L https://github.com/sourceplusplus/interface-cli/releases/latest/download/spp-cli && chmod +x spp-cli && mv spp-cli /usr/local/bin/spp-cli
+
       - name: Live breakpoint (false condition)
         run: |
-          docker exec spp-platform ./spp-cli developer add-live-breakpoint -c 1==2 E2ETest.py 19
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer add-live-breakpoint -c 1==2 E2ETest.py 19
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          docker exec spp-platform ./spp-cli developer clear-live-instruments
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer clear-live-instruments
 
       - name: Live log (false condition)
         run: |
-          docker exec spp-platform ./spp-cli developer add-live-log -c 1==2 -l provider E2ETest.py 19 Hello {}
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer add-live-log -c 1==2 -l provider E2ETest.py 19 Hello {}
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          docker exec spp-platform ./spp-cli developer clear-live-instruments
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer clear-live-instruments
 
       - name: Live breakpoint (hit limit = 2)
         run: |
-          docker exec spp-platform ./spp-cli developer add-live-breakpoint -hitLimit 2 E2ETest.py 19
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer add-live-breakpoint -hitLimit 2 E2ETest.py 19
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
 
       - name: Live log (hit limit = 2)
         run: |
-          docker exec spp-platform ./spp-cli developer add-live-log -hitLimit 2 -l provider E2ETest.py 19 Hello {}
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
+          spp-cli developer add-live-log -hitLimit 2 -l provider E2ETest.py 19 Hello {}
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."hitLimit") == "2" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "1" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
-          resp=$(docker exec spp-platform ./spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
+          resp=$(spp-cli developer get-live-instruments) && [[ $resp == "[]" ]] && echo $resp || (echo $resp && exit 1)
 
       - name: Docker logs
         run: cd e2e && docker-compose logs -t --tail="all"
