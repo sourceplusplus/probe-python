@@ -4,10 +4,7 @@ WORKDIR /usr/local/bin
 
 RUN pip install Flask
 RUN pip install PyYAML
-
-COPY vertx-eventbus-client-1.0.0.dev0.tar.gz .
-
-RUN pip install vertx-eventbus-client-1.0.0.dev0.tar.gz
+RUN pip install vertx-eventbus-client
 
 COPY sourceplusplus-0.1.0.tar.gz .
 
