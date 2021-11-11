@@ -103,7 +103,7 @@ def apply_breakpoint(live_breakpoint_id, globals, locals):
         for key in locals:
             var = try_find(key, globals, locals)
             tag = StringTag(json.dumps({
-                key: str(var),  # don't str everything
+                key: str(var),  # todo: don't str everything
                 "@class": str(type(var)),
                 "@identity": id(var)
             }))
