@@ -4,4 +4,5 @@ plugins {
 
 python {
     pip("apache-skywalking:0.7.0")
+    pip("vertx-eventbus-client:1.0.0")    
 }

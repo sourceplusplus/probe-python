@@ -11,3 +11,9 @@ This project provides Python support to the [Source++](https://github.com/source
 # Usage
 
 - `pip install sourceplusplus`
+
+## Attach
+
+```sh
+SourcePlusPlus().attach()
+```

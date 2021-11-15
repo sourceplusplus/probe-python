@@ -24,9 +24,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: |
           PROBE_VERSION="$(python setup.py --version)"
-          echo "PROBE_VERSION=$PROBE_VERSION" >> $GITHUB_ENV
+          echo "SPP_PROBE_VERSION=$PROBE_VERSION" >> $GITHUB_ENV
       - run: python setup.py sdist
-      - run: cp dist/sourceplusplus-${{ env.PROBE_VERSION }}.tar.gz e2e && ls && pwd
+      - run: cp dist/sourceplusplus-${{ env.SPP_PROBE_VERSION }}.tar.gz e2e && ls && pwd
       - run: cd e2e && docker-compose up -d
       - name: Docker IPs
         run: docker inspect --format='{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
@@ -90,3 +90,25 @@ jobs:
       - name: Docker logs
         run: cd e2e && docker-compose logs -t --tail="all"
         if: ${{ always() }}
+
+      - name: Remove Old Release Drafts
+        if: github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases \
+            | tr '\r\n' ' ' \
+            | jq '.[] | select(.draft == true) | .id' \
+            | xargs -I '{}' \
+          curl -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases/{}
+
+      - name: Create Release Draft
+        if: github.ref == 'refs/heads/master'
+        id: createDraft
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.SPP_PROBE_VERSION }}
+          release_name: v${{ env.SPP_PROBE_VERSION }}
+          draft: true
