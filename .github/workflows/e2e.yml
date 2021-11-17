@@ -26,7 +26,7 @@ jobs:
           PROBE_VERSION="$(python setup.py --version)"
           echo "SPP_PROBE_VERSION=$PROBE_VERSION" >> $GITHUB_ENV
       - run: python setup.py sdist
-      - run: cp dist/sourceplusplus-${{ env.SPP_PROBE_VERSION }}.tar.gz e2e && ls && pwd
+      - run: cp dist/sourceplusplus-${{ env.SPP_PROBE_VERSION }}.tar.gz e2e
       - run: cd e2e && docker-compose up -d
       - name: Docker IPs
         run: docker inspect --format='{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
