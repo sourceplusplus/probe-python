@@ -24,7 +24,7 @@ class LiveMeter(LiveInstrument):
         for key in json_dict:
             setattr(meter, key, json_dict[key])
         meter.location = LiveSourceLocation(json_dict["location"]["source"], json_dict["location"]["line"])
-        
+
         if "throttle" in json_dict:
             meter.throttle = HitThrottle(json_dict["throttle"]["limit"], ThrottleStep(json_dict["throttle"]["step"]))
 
