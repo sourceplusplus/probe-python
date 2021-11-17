@@ -46,15 +46,10 @@ services:
     ports:
       - "11800:11800"
     depends_on:
-      - es-server
       - spp-platform
     links:
-      - es-server
       - spp-platform
-    restart: on-failure
     environment:
-      - SW_STORAGE=elasticsearch
-      - SW_STORAGE_ES_CLUSTER_NODES=es-server:9200
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_PLATFORM_PORT=5460
       - SPP_PLATFORM_CERTIFICATE_FILE=/skywalking/spp-platform.crt
@@ -65,17 +60,3 @@ services:
       - SW_RECEIVER_GRPC_SSL_ENABLED=true
       - SW_RECEIVER_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
       - SW_RECEIVER_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
-  es-server:
-    image: blacktop/elasticsearch:7.0.0
-    container_name: es-server
-    hostname: es-server
-    cap_add:
-      - IPC_LOCK
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    command: -E cluster.name=es-skywalking -E path.data=data -E path.logs=logs -E network.host=0.0.0.0 -E node.name=node-1
