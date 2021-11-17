@@ -25,9 +25,9 @@ jobs:
       - run: |
           PROBE_VERSION="$(python setup.py --version)"
           echo "SPP_PROBE_VERSION=$PROBE_VERSION" >> $GITHUB_ENV
-      - run: python setup.py sdist
-      - run: cp dist/sourceplusplus-${{ env.SPP_PROBE_VERSION }}.tar.gz e2e
-      - run: cd e2e && docker-compose up -d
+
+      - run: ./gradlew assembleUp
+
       - name: Docker IPs
         run: docker inspect --format='{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
       - name: Set E2E_APP_HOST
