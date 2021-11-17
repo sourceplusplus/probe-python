@@ -133,3 +133,9 @@ class SourcePlusPlus(object):
                 LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.LOG
             )
         )
+        eb.register_handler(
+            address="spp.probe.command.live-meter-remote:" + self.probe_config["spp"]["probe_id"],
+            handler=lambda msg: self.instrument_remote.handle_instrument_command(
+                LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.METER
+            )
+        )

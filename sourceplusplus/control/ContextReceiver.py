@@ -2,7 +2,6 @@ import json
 import threading
 import time
 import traceback
-
 from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TextLog, TraceContext, LogTags
@@ -12,6 +11,7 @@ from skywalking.trace.tags import Tag
 from sourceplusplus.control.LiveInstrumentRemote import LiveInstrumentRemote
 from sourceplusplus.models.instrument.LiveBreakpoint import LiveBreakpoint
 from sourceplusplus.models.instrument.LiveLog import LiveLog
+from sourceplusplus.models.instrument.LiveMeter import LiveMeter
 
 
 def try_find(var, globals, locals):
@@ -21,7 +21,16 @@ def try_find(var, globals, locals):
         return globals[var]
 
 
-def do_log(live_log_id, globals, locals):
+def apply_meter(live_meter_id, globals, locals):
+    live_meter: LiveMeter = LiveInstrumentRemote.instruments[live_meter_id][1]
+    if live_meter.throttle.is_rate_limited():
+        return
+    if live_meter.condition is not None and not eval(live_meter.condition, globals, locals):
+        return
+    pass
+
+
+def apply_log(live_log_id, globals, locals):
     live_log: LiveLog = LiveInstrumentRemote.instruments[live_log_id][1]
     if live_log.throttle.is_rate_limited():
         return
@@ -80,7 +89,7 @@ def do_log(live_log_id, globals, locals):
         })
 
 
-def do_breakpoint(live_breakpoint_id, globals, locals):
+def apply_breakpoint(live_breakpoint_id, globals, locals):
     live_breakpoint: LiveBreakpoint = LiveInstrumentRemote.instruments[live_breakpoint_id][1]
     if live_breakpoint.throttle.is_rate_limited():
         return
@@ -94,7 +103,7 @@ def do_breakpoint(live_breakpoint_id, globals, locals):
         for key in locals:
             var = try_find(key, globals, locals)
             tag = StringTag(json.dumps({
-                key: str(var),  # don't str everything
+                key: str(var),  # todo: don't str everything
                 "@class": str(type(var)),
                 "@identity": id(var)
             }))
