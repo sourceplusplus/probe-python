@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   e2e-test:
+    container_name: e2e-test
     build:
       context: .
     depends_on:
