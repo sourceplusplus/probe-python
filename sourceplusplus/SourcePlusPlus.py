@@ -26,17 +26,25 @@ class SourcePlusPlus(object):
         else:
             return true_default
 
-    def __init__(self, **kwargs):
+    def __init__(self, args: dict = None):
+        if args is None:
+            args = {}
         probe_config_file = os.getenv("SPP_PROBE_CONFIG_FILE", "spp-probe.yml")
         probe_config = {}
         if os.path.exists(probe_config_file):
             probe_config = yaml.full_load(open(probe_config_file, "r"))
-        else:
+
+        # ensure probe_config has required keys
+        if probe_config.get("spp") is None:
             probe_config["spp"] = {}
+        if probe_config.get("skywalking") is None:
             probe_config["skywalking"] = {}
+        if probe_config["skywalking"].get("collector") is None:
             probe_config["skywalking"]["collector"] = {}
+        if probe_config["skywalking"].get("agent") is None:
             probe_config["skywalking"]["agent"] = {}
 
+        # set default values
         probe_config["spp"]["probe_id"] = self.get_config_value(
             "SPP_PROBE_ID", probe_config["spp"].get("probe_id"), str(uuid.uuid4())
         )
@@ -46,12 +54,12 @@ class SourcePlusPlus(object):
         probe_config["spp"]["platform_port"] = self.get_config_value(
             "SPP_PLATFORM_PORT", probe_config["spp"].get("platform_port"), 5450
         )
-        probe_config["spp"]["verify_host"] = self.get_config_value(
+        probe_config["spp"]["verify_host"] = str(self.get_config_value(
             "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
-        )
-        probe_config["spp"]["disable_tls"] = self.get_config_value(
+        )).lower() == "true"
+        probe_config["spp"]["disable_tls"] = str(self.get_config_value(
             "SPP_DISABLE_TLS", probe_config["spp"].get("disable_tls"), False
-        )
+        )).lower() == "true"
         probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
             "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "spp"
         )
@@ -63,11 +71,20 @@ class SourcePlusPlus(object):
             probe_config["skywalking"]["collector"].get("backend_service"),
             skywalking_host + ":" + str(skywalking_port)
         )
-        self.probe_config = probe_config
 
+        for key, val in args.items():
+            tmp_config = probe_config
+            loc = key.split(".")
+            for i in range(len(loc)):
+                if tmp_config.get(loc[i]) is None:
+                    tmp_config[loc[i]] = {}
+                if i == len(loc) - 1:
+                    tmp_config[loc[i]] = val
+                else:
+                    tmp_config = tmp_config[loc[i]]
+
+        self.probe_config = probe_config
         self.instrument_remote = None
-        for key, val in kwargs.items():
-            self.__dict__[key] = val
 
     def attach(self):
         config.init(
@@ -88,7 +105,13 @@ class SourcePlusPlus(object):
 
         ssl_ctx = ssl.create_default_context(cadata=ca_data)
         ssl_ctx.check_hostname = self.probe_config["spp"]["verify_host"]
-        ssl_ctx.verify_mode = ssl.CERT_NONE  # todo: CERT_REQUIRED / load_verify_locations ?
+        if self.probe_config["spp"]["disable_tls"] is True:
+            ssl_ctx = None
+        elif ssl_ctx.check_hostname is True:
+            ssl_ctx.verify_mode = ssl.CERT_REQUIRED
+        else:
+            ssl_ctx.verify_mode = ssl.CERT_NONE
+
         eb = EventBus(
             host=self.probe_config["spp"]["platform_host"], port=self.probe_config["spp"]["platform_port"],
             ssl_context=ssl_ctx
