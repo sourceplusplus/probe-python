@@ -2,6 +2,7 @@ import json
 import threading
 import time
 import traceback
+
 from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TextLog, TraceContext, LogTags
@@ -102,12 +103,20 @@ def apply_breakpoint(live_breakpoint_id, globals, locals):
     context: SpanContext = get_context()
 
     with context.new_local_span(op=operation) as span:
-        for key in locals:
-            var = try_find(key, globals, locals)
+        for key, value in globals.items():
             tag = StringTag(json.dumps({
-                key: str(var),  # todo: don't str everything
-                "@class": str(type(var)),
-                "@identity": id(var)
+                key: str(value),  # todo: don't str everything
+                "@class": str(type(value)),
+                "@identity": id(value)
+            }))
+            tag.key = "spp.global-variable:" + live_breakpoint.id + ":" + key
+            span.tag(tag)
+
+        for key, value in locals.items():
+            tag = StringTag(json.dumps({
+                key: str(value),  # todo: don't str everything
+                "@class": str(type(value)),
+                "@identity": id(value)
             }))
             tag.key = "spp.local-variable:" + live_breakpoint.id + ":" + key
             span.tag(tag)
