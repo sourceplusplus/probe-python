@@ -90,6 +90,8 @@ def apply_log(live_log_id, globals, locals):
 
 
 def apply_breakpoint(live_breakpoint_id, globals, locals):
+    del locals["ContextReceiver"]
+
     live_breakpoint: LiveBreakpoint = LiveInstrumentRemote.instruments[live_breakpoint_id][1]
     if live_breakpoint.throttle.is_rate_limited():
         return

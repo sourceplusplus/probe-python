@@ -34,7 +34,7 @@ class LiveInstrumentRemote(object):
             else:
                 live_instrument = LiveMeter.from_json(i)
             bp = LiveInstrumentRemote.dbg.breakpoint(
-                file=live_instrument.location.source,
+                file=live_instrument.location.source[live_instrument.location.source.rfind("/") + 1:],
                 line=live_instrument.location.line
             )
             LiveInstrumentRemote.instruments[live_instrument.id] = [bp, live_instrument]
