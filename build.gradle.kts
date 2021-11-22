@@ -10,7 +10,7 @@ python {
 
 tasks {
     register<Exec>("buildDist") {
-        executable = "python"
+        executable = "python3"
         args("setup.py", "sdist")
     }
 
