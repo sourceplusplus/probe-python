@@ -10,7 +10,8 @@ python {
 
 tasks {
     register<Exec>("buildDist") {
-        commandLine("sh", "-c", "python setup.py sdist")
+        executable = "python3"
+        args("setup.py", "sdist")
     }
 
     register<Copy>("updateDockerFiles") {
