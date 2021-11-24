@@ -104,14 +104,17 @@ def apply_breakpoint(live_breakpoint_id, globals, locals):
     context: SpanContext = get_context()
 
     with context.new_local_span(op=operation) as span:
-        for key, value in globals.items():
-            tag = StringTag(json.dumps({
-                key: str(value),  # todo: don't str everything
-                "@class": str(type(value)),
-                "@identity": id(value)
-            }))
-            tag.key = "spp.global-variable:" + live_breakpoint.id + ":" + key
-            span.tag(tag)
+        try:
+            for key, value in globals.items():
+                tag = StringTag(json.dumps({
+                    key: str(value),  # todo: don't str everything
+                    "@class": str(type(value)),
+                    "@identity": id(value)
+                }))
+                tag.key = "spp.global-variable:" + live_breakpoint.id + ":" + key
+                span.tag(tag)
+        except Exception:
+            pass
 
         for key, value in locals.items():
             tag = StringTag(json.dumps({
