@@ -14,6 +14,7 @@ This project provides Python support to the [Source++](https://github.com/source
 
 ## Attach
 
-```sh
+```python
+from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus().attach()
 ```
