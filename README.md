@@ -18,3 +18,27 @@ This project provides Python support to the [Source++](https://github.com/source
 from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus().attach()
 ```
+
+### Config
+
+Use `spp-probe.yml` file in working directory:
+
+```yml
+spp:
+  platform_host: "localhost"
+  disable_tls: true
+skywalking:
+  collector:
+    backend_service: "localhost:11800"
+```
+
+Or construct with dict:
+
+```python
+from sourceplusplus.SourcePlusPlus import SourcePlusPlus
+SourcePlusPlus({
+    "spp.platform_host": "localhost",
+    "spp.disable_tls": True,
+    "skywalking.collector.backend_service": "localhost:11800"
+}).attach()
+```
