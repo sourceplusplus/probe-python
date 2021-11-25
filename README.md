@@ -21,7 +21,7 @@ SourcePlusPlus().attach()
 
 ### Config
 
-Use `spp-probe.yml` file in working directory:
+Use `spp-probe.yml` file in working directory (or use `SPP_PROBE_CONFIG_FILE` env):
 
 ```yml
 spp:
