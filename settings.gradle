@@ -1,5 +1,5 @@
 pluginManagement {
     plugins {
-        id 'com.avast.gradle.docker-compose' version "0.14.9" apply false
+        id 'com.avast.gradle.docker-compose' version "0.14.11" apply false
     }
 }
