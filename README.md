@@ -1,7 +1,7 @@
 # ![](https://github.com/sourceplusplus/live-platform/blob/master/.github/media/sourcepp_logo.svg)
 
 [![License](https://img.shields.io/github/license/sourceplusplus/probe-python)](LICENSE)
-![GitHub release](https://img.shields.io/github/v/release/sourceplusplus/probe-python?include_prereleases)
+![PyPI](https://img.shields.io/pypi/v/sourceplusplus?color=blue)
 [![E2E](https://github.com/sourceplusplus/probe-python/actions/workflows/e2e.yml/badge.svg)](https://github.com/sourceplusplus/probe-python/actions/workflows/e2e.yml)
 
 # What is this?
