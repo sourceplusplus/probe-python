@@ -1,6 +1,14 @@
 name: Lint
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.svg'
 
 jobs:
   flake8:
