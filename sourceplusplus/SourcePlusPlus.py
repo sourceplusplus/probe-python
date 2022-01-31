@@ -140,7 +140,7 @@ class SourcePlusPlus(object):
             "probeId": self.probe_config["spp"]["probe_id"],
             "connectionTime": round(time.time() * 1000),
             "meta": probe_metadata
-        }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, msg["body"]["value"]))
+        }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, msg["body"]))
 
     def __register_remotes(self, eb, reply_address, status):
         eb.unregister_handler(reply_address)
