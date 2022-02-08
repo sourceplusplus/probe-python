@@ -17,6 +17,11 @@ class LiveLog(LiveInstrument):
         self.hit_limit = None
         self.type = LiveInstrumentType.LOG
 
+    def to_dict(self):
+        dict = humps.camelize(json.loads(self.to_json()))
+        dict["meta"] = self.__dict__["meta"]
+        return dict
+
     @classmethod
     def from_dict(cls, json_dict):
         # todo: easier way to convert

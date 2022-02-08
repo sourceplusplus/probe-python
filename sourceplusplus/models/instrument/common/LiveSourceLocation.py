@@ -4,9 +4,11 @@ import humps
 
 
 class LiveSourceLocation(object):
-    def __init__(self, source, line, commit_id=None, file_checksum=None):
+    def __init__(self, source, line, service=None, service_instance=None, commit_id=None, file_checksum=None):
         self.source = source
         self.line = line
+        self.service = service
+        self.service_instance = service_instance
         self.commit_id = commit_id
         self.file_checksum = file_checksum
 

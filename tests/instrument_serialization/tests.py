@@ -2,6 +2,7 @@ import json
 import time
 import unittest
 
+from sourceplusplus.models.command.LiveInstrumentCommand import LiveInstrumentCommand
 from sourceplusplus.models.instrument.LiveBreakpoint import LiveBreakpoint
 from sourceplusplus.models.instrument.LiveLog import LiveLog
 from sourceplusplus.models.instrument.common.LiveSourceLocation import LiveSourceLocation
@@ -10,6 +11,43 @@ from sourceplusplus.models.instrument.common.throttle.ThrottleStep import Thrott
 
 
 class TestSum(unittest.TestCase):
+
+    def test_command_serialization(self):
+        raw_command = {
+            "commandType": "ADD_LIVE_INSTRUMENT",
+            "instruments": [
+                {
+                    "location": {
+                        "source": "E2ETest.py",
+                        "line": 18, "service": None,
+                        "serviceInstance": None,
+                        "commitId": None,
+                        "fileChecksum": None
+                    },
+                    "condition": None,
+                    "expiresAt": None,
+                    "hitLimit": 1,
+                    "id": "3145bbee-8d81-4184-8c3d-f97f208a6e15",
+                    "applyImmediately": False,
+                    "applied": False,
+                    "pending": True,
+                    "throttle": {
+                        "limit": 1,
+                        "step": "SECOND"
+                    },
+                    "meta": {
+                        "created_at": "1644293169743",
+                        "created_by": "system",
+                        "hit_count": 0
+                    },
+                    "type": "BREAKPOINT"
+                }
+            ],
+            "locations": []
+        }
+        command = LiveInstrumentCommand.from_json(json.dumps(raw_command))
+        bp = LiveBreakpoint.from_dict(command.instruments[0])
+        self.assertEqual(raw_command["instruments"][0], LiveBreakpoint.from_json(bp.to_json()).to_dict())
 
     def test_deserialize_breakpoint(self):
         raw_bp = {

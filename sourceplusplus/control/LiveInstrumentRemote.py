@@ -1,8 +1,6 @@
 import sys
 import threading
-from typing import List
 
-import humps
 from nopdb import nopdb
 from vertx import EventBus
 
@@ -26,8 +24,8 @@ class LiveInstrumentRemote(object):
         LiveInstrumentRemote.dbg.start()
         threading.settrace(sys.gettrace())
 
-    def add_live_instrument(self, instruments: List[dict]):
-        for inst_dict in instruments:
+    def add_live_instrument(self, command: LiveInstrumentCommand):
+        for inst_dict in command.instruments:
             instrument_type: LiveInstrumentType = LiveInstrumentType.from_string(inst_dict["type"])
             if instrument_type == LiveInstrumentType.BREAKPOINT:
                 live_instrument = LiveBreakpoint.from_dict(inst_dict)
@@ -43,21 +41,15 @@ class LiveInstrumentRemote(object):
             if instrument_type == LiveInstrumentType.BREAKPOINT:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_breakpoint('" + live_instrument.id + "',globals(),locals())")
-                body = humps.camelize(inst_dict)
-                body["meta"] = inst_dict["meta"]
-                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=live_instrument.to_dict())
             elif instrument_type == LiveInstrumentType.LOG:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_log('" + live_instrument.id + "',globals(),locals())")
-                body = humps.camelize(inst_dict)
-                body["meta"] = inst_dict["meta"]
-                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=live_instrument.to_dict())
             else:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_meter('" + live_instrument.id + "',globals(),locals())")
-                body = humps.camelize(inst_dict)
-                body["meta"] = inst_dict["meta"]
-                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=live_instrument.to_dict())
 
     def remove_live_instrument(self, command: LiveInstrumentCommand):
         print("Removing live instrument(s)")
@@ -84,6 +76,6 @@ class LiveInstrumentRemote(object):
     def handle_instrument_command(self, command: LiveInstrumentCommand):
         print("Received command: " + command.command_type)
         if command.command_type == CommandType.ADD_LIVE_INSTRUMENT:
-            self.add_live_instrument(command.instruments)
+            self.add_live_instrument(command)
         elif command.command_type == CommandType.REMOVE_LIVE_INSTRUMENT:
             self.remove_live_instrument(command)
