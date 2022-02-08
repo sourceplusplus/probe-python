@@ -2,7 +2,7 @@ import setuptools
 from setuptools import setup
 
 setup(name='sourceplusplus',
-      version='0.1.5',
+      version='0.4.0',
       description='Source++ Python Probe',
       url='https://github.com/sourceplusplus/probe-python',
       author='Source++',

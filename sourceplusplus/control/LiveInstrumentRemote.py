@@ -1,12 +1,13 @@
-import json
 import sys
 import threading
+from typing import List
+
+import humps
 from nopdb import nopdb
 from vertx import EventBus
 
 from sourceplusplus.models.command.CommandType import CommandType
 from sourceplusplus.models.command.LiveInstrumentCommand import LiveInstrumentCommand
-from sourceplusplus.models.command.LiveInstrumentContext import LiveInstrumentContext
 from sourceplusplus.models.instrument.LiveBreakpoint import LiveBreakpoint
 from sourceplusplus.models.instrument.LiveLog import LiveLog
 from sourceplusplus.models.instrument.LiveMeter import LiveMeter
@@ -25,14 +26,15 @@ class LiveInstrumentRemote(object):
         LiveInstrumentRemote.dbg.start()
         threading.settrace(sys.gettrace())
 
-    def add_live_instrument(self, context: LiveInstrumentContext, instrument_type: LiveInstrumentType):
-        for i in context.instruments:
+    def add_live_instrument(self, instruments: List[dict]):
+        for inst_dict in instruments:
+            instrument_type: LiveInstrumentType = LiveInstrumentType.from_string(inst_dict["type"])
             if instrument_type == LiveInstrumentType.BREAKPOINT:
-                live_instrument = LiveBreakpoint.from_json(i)
+                live_instrument = LiveBreakpoint.from_dict(inst_dict)
             elif instrument_type == LiveInstrumentType.LOG:
-                live_instrument = LiveLog.from_json(i)
+                live_instrument = LiveLog.from_dict(inst_dict)
             else:
-                live_instrument = LiveMeter.from_json(i)
+                live_instrument = LiveMeter.from_dict(inst_dict)
             bp = LiveInstrumentRemote.dbg.breakpoint(
                 file=live_instrument.location.source[live_instrument.location.source.rfind("/") + 1:],
                 line=live_instrument.location.line
@@ -41,46 +43,47 @@ class LiveInstrumentRemote(object):
             if instrument_type == LiveInstrumentType.BREAKPOINT:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_breakpoint('" + live_instrument.id + "',globals(),locals())")
-                self.eb.publish(address="spp.platform.status.live-breakpoint-applied", body=json.loads(i))
+                body = humps.camelize(inst_dict)
+                body["meta"] = inst_dict["meta"]
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
             elif instrument_type == LiveInstrumentType.LOG:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_log('" + live_instrument.id + "',globals(),locals())")
-                self.eb.publish(address="spp.platform.status.live-log-applied", body=json.loads(i))
+                body = humps.camelize(inst_dict)
+                body["meta"] = inst_dict["meta"]
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
             else:
                 bp.exec("import sourceplusplus.control.ContextReceiver as ContextReceiver\n"
                         "ContextReceiver.apply_meter('" + live_instrument.id + "',globals(),locals())")
-                self.eb.publish(address="spp.platform.status.live-meter-applied", body=json.loads(i))
+                body = humps.camelize(inst_dict)
+                body["meta"] = inst_dict["meta"]
+                self.eb.publish(address="spp.processor.status.live-instrument-applied", body=body)
 
-    def remove_live_instrument(self, context: LiveInstrumentContext, type: LiveInstrumentType):
+    def remove_live_instrument(self, command: LiveInstrumentCommand):
         print("Removing live instrument(s)")
-        for i in context.instruments:
+        for inst_dict in command.instruments:
             if type == LiveInstrumentType.BREAKPOINT:
-                instrument = LiveBreakpoint.from_json(i)
+                instrument = LiveBreakpoint.from_dict(inst_dict)
             elif type == LiveInstrumentType.LOG:
-                instrument = LiveLog.from_json(i)
+                instrument = LiveLog.from_dict(inst_dict)
             else:
-                instrument = LiveMeter.from_json(i)
+                instrument = LiveMeter.from_dict(inst_dict)
             try:
                 LiveInstrumentRemote.dbg.remove_callback(LiveInstrumentRemote.instruments.pop(instrument.id)[0]._handle)
             except KeyError:
                 pass
-        for i in context.locations:
-            loc = LiveSourceLocation.from_json(i)
+        for inst_dict in command.locations:
+            loc = LiveSourceLocation.from_json(inst_dict)
             delete = []
             for key, val in LiveInstrumentRemote.instruments.items():
                 if val[1].type == type and val[1].location == loc:
                     delete.append(key)
-            for i in delete:
-                del LiveInstrumentRemote.instruments[i]
+            for inst_dict in delete:
+                del LiveInstrumentRemote.instruments[inst_dict]
 
-    def handle_instrument_command(self, command: LiveInstrumentCommand, instrument_type: LiveInstrumentType):
+    def handle_instrument_command(self, command: LiveInstrumentCommand):
         print("Received command: " + command.command_type)
         if command.command_type == CommandType.ADD_LIVE_INSTRUMENT:
-            if instrument_type == LiveInstrumentType.BREAKPOINT:
-                self.add_live_instrument(command.context, LiveInstrumentType.BREAKPOINT)
-            elif instrument_type == LiveInstrumentType.LOG:
-                self.add_live_instrument(command.context, LiveInstrumentType.LOG)
-            else:
-                self.add_live_instrument(command.context, LiveInstrumentType.METER)
+            self.add_live_instrument(command.instruments)
         elif command.command_type == CommandType.REMOVE_LIVE_INSTRUMENT:
-            self.remove_live_instrument(command.context, instrument_type)
+            self.remove_live_instrument(command)

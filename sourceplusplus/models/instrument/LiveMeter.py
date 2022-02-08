@@ -16,8 +16,7 @@ class LiveMeter(LiveInstrument):
         self.type = LiveInstrumentType.METER
 
     @classmethod
-    def from_json(cls, json_str):
-        json_dict = humps.decamelize(json.loads(json_str))
+    def from_dict(cls, json_dict):
         # todo: easier way to convert
         location = LiveSourceLocation(json_dict["location"]["source"], json_dict["location"]["line"])
         meter = LiveMeter(location)
@@ -30,3 +29,8 @@ class LiveMeter(LiveInstrument):
 
         meter.type = LiveInstrumentType.METER
         return meter
+
+    @classmethod
+    def from_json(cls, json_str):
+        json_dict = humps.decamelize(json.loads(json_str))
+        return cls.from_dict(json_dict)

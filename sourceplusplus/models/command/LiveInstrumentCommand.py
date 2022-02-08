@@ -1,15 +1,16 @@
 import json
+from typing import List
 
 import humps
 
 from .CommandType import CommandType
-from .LiveInstrumentContext import LiveInstrumentContext
 
 
 class LiveInstrumentCommand(object):
-    def __init__(self, command_type: CommandType, context: LiveInstrumentContext):
+    def __init__(self, command_type: CommandType, instruments: List[dict], locations: List[dict]):
         self.command_type = command_type
-        self.context = context
+        self.instruments = instruments
+        self.locations = locations
 
     def to_json(self):
         return json.dumps(self, default=lambda o: humps.camelize(o.__dict__))
@@ -17,8 +18,4 @@ class LiveInstrumentCommand(object):
     @classmethod
     def from_json(cls, json_str):
         json_dict = humps.decamelize(json.loads(json_str))
-        # todo: easier way to convert
-        context = LiveInstrumentContext([], [])
-        for key in json_dict["context"]:
-            setattr(context, key, json_dict["context"][key])
-        return LiveInstrumentCommand(json_dict["command_type"], context)
+        return LiveInstrumentCommand(json_dict["command_type"], json_dict["instruments"], json_dict["locations"])

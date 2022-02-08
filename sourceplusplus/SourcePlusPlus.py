@@ -12,7 +12,6 @@ from vertx import EventBus
 from sourceplusplus import __version__
 from .control.LiveInstrumentRemote import LiveInstrumentRemote
 from .models.command.LiveInstrumentCommand import LiveInstrumentCommand
-from .models.instrument.common.LiveInstrumentType import LiveInstrumentType
 
 
 class SourcePlusPlus(object):
@@ -137,7 +136,7 @@ class SourcePlusPlus(object):
         # send probe connected event
         reply_address = str(uuid.uuid4())
         eb.send(address="spp.platform.status.probe-connected", body={
-            "probeId": self.probe_config["spp"]["probe_id"],
+            "instanceId": self.probe_config["spp"]["probe_id"],
             "connectionTime": round(time.time() * 1000),
             "meta": probe_metadata
         }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, msg["body"]))
@@ -145,20 +144,14 @@ class SourcePlusPlus(object):
     def __register_remotes(self, eb, reply_address, status):
         eb.unregister_handler(reply_address)
         eb.register_handler(
-            address="spp.probe.command.live-breakpoint-remote:" + self.probe_config["spp"]["probe_id"],
+            address="spp.probe.command.live-instrument-remote",
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
-                LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.BREAKPOINT
+                LiveInstrumentCommand.from_json(json.dumps(msg["body"]))
             )
         )
         eb.register_handler(
-            address="spp.probe.command.live-log-remote:" + self.probe_config["spp"]["probe_id"],
+            address="spp.probe.command.live-instrument-remote:" + self.probe_config["spp"]["probe_id"],
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
-                LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.LOG
-            )
-        )
-        eb.register_handler(
-            address="spp.probe.command.live-meter-remote:" + self.probe_config["spp"]["probe_id"],
-            handler=lambda msg: self.instrument_remote.handle_instrument_command(
-                LiveInstrumentCommand.from_json(json.dumps(msg["body"])), LiveInstrumentType.METER
+                LiveInstrumentCommand.from_json(json.dumps(msg["body"]))
             )
         )
