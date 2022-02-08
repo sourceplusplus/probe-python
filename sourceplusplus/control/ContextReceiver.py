@@ -85,7 +85,7 @@ def apply_log(live_log_id, globals, locals):
         except Exception:
             pass
         LiveInstrumentRemote.eb.send(address="spp.processor.status.live-instrument-removed", body={
-            "log": live_log.to_json(),
+            "instrument": live_log.to_json(),
             "occurredAt": round(time.time() * 1000)
         })
 
