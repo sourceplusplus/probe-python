@@ -12,6 +12,7 @@ on:
     paths-ignore:
       - '**.md'
       - '**.svg'
+  workflow_dispatch:
 
 jobs:
   build:
