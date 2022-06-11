@@ -56,7 +56,7 @@ jobs:
           resp=$(spp-cli -a change-me get instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
           resp=$(spp-cli -a change-me get instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          spp-cli -a change-me clear instruments
+          spp-cli -a change-me remove all-instruments
 
       - name: Live log (false condition)
         run: |
@@ -64,7 +64,7 @@ jobs:
           resp=$(spp-cli -a change-me get instruments) && [[ $(echo $resp | jq -r .[0]."applied") == "true" ]] && echo $resp || (echo $resp && exit 1)
           curl ${{ env.E2E_APP_HOST }}:5000 && sleep 35s
           resp=$(spp-cli -a change-me get instruments) && [[ $(echo $resp | jq -r .[0]."meta"."hit_count") == "0" ]] && echo $resp || (echo $resp && exit 1)
-          spp-cli -a change-me clear instruments
+          spp-cli -a change-me remove all-instruments
 
       - name: Live breakpoint (hit limit = 2)
         run: |
