@@ -133,6 +133,8 @@ class TestSum(unittest.TestCase):
             "location": {
                 "source": "File.py",
                 "line": 1,
+                "service": None,
+                "serviceInstance": None,
                 "commitId": None,
                 "fileChecksum": None
             },
@@ -165,6 +167,8 @@ class TestSum(unittest.TestCase):
             "location": {
                 "source": "File.py",
                 "line": 1,
+                "service": None,
+                "serviceInstance": None,
                 "commitId": None,
                 "fileChecksum": None
             },

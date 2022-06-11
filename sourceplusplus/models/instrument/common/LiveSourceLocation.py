@@ -29,6 +29,9 @@ class LiveSourceLocation(object):
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return LiveSourceLocation(dict_obj["source"], dict_obj["line"],
+        return LiveSourceLocation(dict_obj["source"],
+                                  dict_obj["line"],
+                                  dict_obj["service"] if "service" in dict_obj else None,
+                                  dict_obj["service_instance"] if "service_instance" in dict_obj else None,
                                   dict_obj["commit_id"] if "commit_id" in dict_obj else None,
                                   dict_obj["file_checksum"] if "file_checksum" in dict_obj else None)
