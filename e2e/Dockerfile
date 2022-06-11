@@ -6,9 +6,9 @@ RUN pip install Flask
 RUN pip install PyYAML
 RUN pip install vertx-eventbus-client
 
-COPY sourceplusplus-0.1.5.tar.gz .
+COPY sourceplusplus-*.tar.gz ./sourceplusplus.tar.gz
 
-RUN pip install sourceplusplus-0.1.5.tar.gz
+RUN pip install sourceplusplus.tar.gz
 
 COPY E2ETest.py .
 

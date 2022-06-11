@@ -4,9 +4,11 @@ import humps
 
 
 class LiveSourceLocation(object):
-    def __init__(self, source, line, commit_id=None, file_checksum=None):
+    def __init__(self, source, line, service=None, service_instance=None, commit_id=None, file_checksum=None):
         self.source = source
         self.line = line
+        self.service = service
+        self.service_instance = service_instance
         self.commit_id = commit_id
         self.file_checksum = file_checksum
 
@@ -27,6 +29,9 @@ class LiveSourceLocation(object):
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return LiveSourceLocation(dict_obj["source"], dict_obj["line"],
+        return LiveSourceLocation(dict_obj["source"],
+                                  dict_obj["line"],
+                                  dict_obj["service"] if "service" in dict_obj else None,
+                                  dict_obj["service_instance"] if "service_instance" in dict_obj else None,
                                   dict_obj["commit_id"] if "commit_id" in dict_obj else None,
                                   dict_obj["file_checksum"] if "file_checksum" in dict_obj else None)

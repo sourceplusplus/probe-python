@@ -17,9 +17,13 @@ class LiveLog(LiveInstrument):
         self.hit_limit = None
         self.type = LiveInstrumentType.LOG
 
+    def to_dict(self):
+        dict = humps.camelize(json.loads(self.to_json()))
+        dict["meta"] = self.__dict__["meta"]
+        return dict
+
     @classmethod
-    def from_json(cls, json_str):
-        json_dict = humps.decamelize(json.loads(json_str))
+    def from_dict(cls, json_dict):
         # todo: easier way to convert
         location = LiveSourceLocation(json_dict["location"]["source"], json_dict["location"]["line"])
         log = LiveLog(location)
@@ -29,3 +33,8 @@ class LiveLog(LiveInstrument):
         log.throttle = HitThrottle(json_dict["throttle"]["limit"], ThrottleStep(json_dict["throttle"]["step"]))
         log.type = LiveInstrumentType.LOG
         return log
+
+    @classmethod
+    def from_json(cls, json_str):
+        json_dict = humps.decamelize(json.loads(json_str))
+        return cls.from_dict(json_dict)
