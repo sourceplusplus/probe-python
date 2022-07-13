@@ -56,8 +56,8 @@ class SourcePlusPlus(object):
         probe_config["spp"]["verify_host"] = str(self.get_config_value(
             "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
         )).lower() == "true"
-        probe_config["spp"]["disable_tls"] = str(self.get_config_value(
-            "SPP_DISABLE_TLS", probe_config["spp"].get("disable_tls"), False
+        probe_config["spp"]["ssl_enabled"] = str(self.get_config_value(
+            "SPP_HTTP_SSL_ENABLED", probe_config["spp"].get("ssl_enabled"), True
         )).lower() == "true"
         probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
             "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "spp"
@@ -90,13 +90,13 @@ class SourcePlusPlus(object):
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
             log_reporter_active=True,
-            force_tls=self.probe_config["spp"]["disable_tls"] is False,
+            force_tls=self.probe_config["spp"]["ssl_enabled"] is True,
             log_reporter_formatted=False
         )
         agent.start()
 
         ca_data = None
-        if self.probe_config["spp"]["disable_tls"] is False \
+        if self.probe_config["spp"]["ssl_enabled"] is True \
                 and self.probe_config["spp"].get("probe_certificate") is not None:
             ca_data = "-----BEGIN CERTIFICATE-----\n" + \
                       self.probe_config["spp"]["probe_certificate"] + \
@@ -104,7 +104,7 @@ class SourcePlusPlus(object):
 
         ssl_ctx = ssl.create_default_context(cadata=ca_data)
         ssl_ctx.check_hostname = self.probe_config["spp"]["verify_host"]
-        if self.probe_config["spp"]["disable_tls"] is True:
+        if self.probe_config["spp"]["ssl_enabled"] is False:
             ssl_ctx = None
         elif ssl_ctx.check_hostname is True:
             ssl_ctx.verify_mode = ssl.CERT_REQUIRED
