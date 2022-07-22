@@ -4,6 +4,10 @@ services:
     container_name: e2e-test
     build:
       context: .
+    depends_on:
+      - spp-platform
+    links:
+      - spp-platform
     environment:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_OAP_HOST=skywalking-oap
