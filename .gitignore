@@ -1,6 +1,7 @@
 # Ignore artifacts
 build/
-/docker/e2e/spp-*.jar
+dist/
+sourceplusplus.egg-info/
 
 # Ignore IDE files
 .idea/
