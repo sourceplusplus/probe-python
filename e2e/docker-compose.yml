@@ -4,12 +4,6 @@ services:
     container_name: e2e-test
     build:
       context: .
-    depends_on:
-      - spp-platform
-      - skywalking-oap
-    links:
-      - spp-platform
-      - skywalking-oap
     environment:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_OAP_HOST=skywalking-oap
@@ -21,34 +15,17 @@ services:
     ports:
       - "5450:5450"
       - "5455:5455"
+      - "11800:11800"
       - "12800:12800"
     environment:
       - SPP_LOGGING_LEVEL=trace
-      - SPP_OAP_HOST=skywalking-oap
-    volumes:
-      - ./config/spp-platform.crt:/opt/sourceplusplus/config/spp-platform.crt
-      - ./config/spp-platform.key:/opt/sourceplusplus/config/spp-platform.key
-  skywalking-oap:
-    image: sourceplusplus/spp-oap-server:latest
-    container_name: skywalking-oap
-    hostname: skywalking-oap
-    ports:
-      - "11800:11800"
-    depends_on:
-      - spp-platform
-    links:
-      - spp-platform
-    environment:
-      - SPP_PLATFORM_HOST=spp-platform
-      - SPP_PLATFORM_PORT=5460
-      - SPP_PLATFORM_CERTIFICATE_FILE=/skywalking/spp-platform.crt
       - SW_CORE_GRPC_SSL_ENABLED=true
-      - SW_CORE_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
-      - SW_CORE_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
-      - SW_CORE_GRPC_SSL_TRUSTED_CA_PATH=/skywalking/spp-platform.crt
+      - SW_CORE_GRPC_SSL_KEY_PATH=/skywalking/config/spp-platform.key
+      - SW_CORE_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/config/spp-platform.crt
+      - SW_CORE_GRPC_SSL_TRUSTED_CA_PATH=/skywalking/config/spp-platform.crt
       - SW_RECEIVER_GRPC_SSL_ENABLED=true
-      - SW_RECEIVER_GRPC_SSL_KEY_PATH=/skywalking/spp-platform.key
-      - SW_RECEIVER_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/spp-platform.crt
+      - SW_RECEIVER_GRPC_SSL_KEY_PATH=/skywalking/config/spp-platform.key
+      - SW_RECEIVER_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/config/spp-platform.crt
     volumes:
-      - ./config/spp-platform.crt:/skywalking/spp-platform.crt
-      - ./config/spp-platform.key:/skywalking/spp-platform.key
+      - ./config/spp-platform.crt:/skywalking/config/spp-platform.crt
+      - ./config/spp-platform.key:/skywalking/config/spp-platform.key
