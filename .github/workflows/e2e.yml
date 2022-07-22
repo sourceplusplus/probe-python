@@ -41,6 +41,7 @@ jobs:
         run: |
           until $(curl --header "Authorization: Bearer ${{ env.SPP_JWT_TOKEN }}" --insecure --output /dev/null --silent --fail https://localhost:12800/health); do printf '.'; sleep 5; done
       - run: curl -sS https://webinstall.dev/jq | bash
+      - run: sleep 15s #wait for services to connect; todo: use health endpoint
 
       - name: Verify probe connected
         run: |
