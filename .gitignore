@@ -1,0 +1,10 @@
+# Ignore artifacts
+build/
+dist/
+sourceplusplus.egg-info/
+
+# Ignore IDE files
+.idea/
+
+# Ignore .gradle directory
+.gradle/
