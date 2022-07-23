@@ -4,6 +4,10 @@ services:
     container_name: e2e-test
     build:
       context: .
+    depends_on:
+      - spp-platform
+    links:
+      - spp-platform
     ports:
       - "5000:5000"
     environment:
