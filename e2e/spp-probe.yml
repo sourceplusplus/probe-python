@@ -40,7 +40,7 @@ skywalking:
     class_cache_mode: "FILE"
     service_name: "spp"
   collector:
-    backend_service: "spp-platform:11800"
+    backend_service: "spp-platform:11801"
   plugin:
     toolkit:
       log:
