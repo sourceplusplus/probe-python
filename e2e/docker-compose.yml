@@ -4,6 +4,8 @@ services:
     container_name: e2e-test
     build:
       context: .
+    ports:
+      - "5000:5000"
     environment:
       - SPP_PLATFORM_HOST=spp-platform
       - SPP_OAP_HOST=skywalking-oap
