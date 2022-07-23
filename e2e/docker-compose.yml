@@ -22,6 +22,7 @@ services:
       - "5450:5450"
       - "5455:5455"
       - "11800:11800"
+      - "11801:11801" #todo: shouldn't be necessary
       - "12800:12800"
     environment:
       - SPP_LOGGING_LEVEL=trace
