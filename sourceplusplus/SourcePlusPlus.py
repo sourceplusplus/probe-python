@@ -63,12 +63,11 @@ class SourcePlusPlus(object):
             "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "spp"
         )
 
-        skywalking_host = self.get_config_value("SPP_OAP_HOST", "localhost", "localhost")
         skywalking_port = self.get_config_value("SPP_OAP_PORT", 11800, 11800)
         probe_config["skywalking"]["collector"]["backend_service"] = self.get_config_value(
             "SPP_SKYWALKING_BACKEND_SERVICE",
             probe_config["skywalking"]["collector"].get("backend_service"),
-            skywalking_host + ":" + str(skywalking_port)
+            probe_config["spp"]["platform_host"] + ":" + str(skywalking_port)
         )
 
         for key, val in args.items():
