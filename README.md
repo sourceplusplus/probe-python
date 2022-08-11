@@ -42,3 +42,7 @@ SourcePlusPlus({
     "skywalking.collector.backend_service": "localhost:11800"
 }).attach()
 ```
+
+## Bugs & Features
+
+Bug reports and feature requests can be created [here](https://github.com/sourceplusplus/live-platform/issues).
