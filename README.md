@@ -19,7 +19,7 @@ from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus().attach()
 ```
 
-#### Config
+### Config
 
 Add `spp-probe.yml` to working directory (or set `SPP_PROBE_CONFIG_FILE` env):
 
