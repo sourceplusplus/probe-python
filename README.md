@@ -4,22 +4,22 @@
 [![PyPI](https://img.shields.io/pypi/v/sourceplusplus?color=blue)](https://pypi.org/project/sourceplusplus/)
 [![E2E](https://github.com/sourceplusplus/probe-python/actions/workflows/e2e.yml/badge.svg)](https://github.com/sourceplusplus/probe-python/actions/workflows/e2e.yml)
 
-# What is this?
+## What is this?
 
 This project provides Python support to the [Source++](https://github.com/sourceplusplus/live-platform) open-source live coding platform.
 
-# Usage
+## Usage
 
 - `pip install sourceplusplus`
 
-## Attach
+### Attach
 
 ```python
 from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus().attach()
 ```
 
-### Config
+#### Config
 
 Add `spp-probe.yml` to working directory (or set `SPP_PROBE_CONFIG_FILE` env):
 
