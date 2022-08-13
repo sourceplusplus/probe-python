@@ -19,8 +19,6 @@ services:
     container_name: spp-platform
     hostname: spp-platform
     ports:
-      - "5450:5450"
-      - "5455:5455"
       - "11800:11800"
       - "11801:11801" #todo: shouldn't be necessary
       - "12800:12800"

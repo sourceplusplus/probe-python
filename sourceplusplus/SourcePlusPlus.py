@@ -51,7 +51,7 @@ class SourcePlusPlus(object):
             "SPP_PLATFORM_HOST", probe_config["spp"].get("platform_host"), "localhost"
         )
         probe_config["spp"]["platform_port"] = self.get_config_value(
-            "SPP_PLATFORM_PORT", probe_config["spp"].get("platform_port"), 5450
+            "SPP_PLATFORM_PORT", probe_config["spp"].get("platform_port"), 12800
         )
         probe_config["spp"]["verify_host"] = str(self.get_config_value(
             "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
