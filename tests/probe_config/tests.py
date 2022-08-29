@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest import mock
 
@@ -16,7 +17,9 @@ class TestSum(unittest.TestCase):
         self.assertEqual("localhost:11800", spp.probe_config["skywalking"]["collector"]["backend_service"])
         self.assertEqual("spp", spp.probe_config["skywalking"]["agent"]["service_name"])
 
-    @mock.patch.dict('os.environ', {'SPP_PROBE_CONFIG_FILE': 'probe_config/resources/base-config.yml'})
+    @mock.patch.dict('os.environ', {
+        'SPP_PROBE_CONFIG_FILE': '%s/resources/base-config.yml' % os.path.dirname(__file__)
+    })
     def test_config_from_env(self):
         spp = SourcePlusPlus()
         self.assertEqual("spp-platform", spp.probe_config["spp"]["platform_host"])
@@ -26,4 +29,3 @@ class TestSum(unittest.TestCase):
         self.assertEqual("spp-platform:11800", spp.probe_config["skywalking"]["collector"]["backend_service"])
         self.assertEqual("tutorial-jvm", spp.probe_config["skywalking"]["agent"]["service_name"])
         self.assertEqual("WARN", spp.probe_config["skywalking"]["logging"]["level"])
-
