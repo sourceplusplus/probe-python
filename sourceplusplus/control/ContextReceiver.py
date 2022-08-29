@@ -109,7 +109,7 @@ def apply_breakpoint(live_breakpoint_id, globals, locals):
                 tag = StringTag(json.dumps({
                     key: str(value),  # todo: don't str everything
                     "@class": str(type(value)),
-                    "@identity": id(value)
+                    "@id": id(value)
                 }))
                 tag.key = "spp.global-variable:" + live_breakpoint.id + ":" + key
                 span.tag(tag)
@@ -120,7 +120,7 @@ def apply_breakpoint(live_breakpoint_id, globals, locals):
             tag = StringTag(json.dumps({
                 key: str(value),  # todo: don't str everything
                 "@class": str(type(value)),
-                "@identity": id(value)
+                "@id": id(value)
             }))
             tag.key = "spp.local-variable:" + live_breakpoint.id + ":" + key
             span.tag(tag)
