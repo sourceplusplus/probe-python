@@ -1,5 +1,5 @@
 vertx-eventbus-client~=1.0.0
-apache-skywalking~=0.7.0
-nopdb~=0.1.0
-pyhumps~=3.0.2
+apache-skywalking~=0.8.0
+nopdb~=0.2.0
+pyhumps~=3.7.2
 PyYAML~=6.0
