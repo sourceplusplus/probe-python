@@ -16,14 +16,22 @@ from .models.command.LiveInstrumentCommand import LiveInstrumentCommand
 
 class SourcePlusPlus(object):
 
-    def get_config_value(self, env, default, true_default):
-        env_value = os.getenv(env)
-        if env_value is not None:
-            return env_value
-        elif default is not None:
-            return default
-        else:
-            return true_default
+    @staticmethod
+    def __set_config_default(config_dict, config_name, env, default):
+        config_path = config_name.split(".")
+        tmp_config = config_dict
+        for i in range(len(config_path)):
+            if i == len(config_path) - 1 and tmp_config.get(config_path[i]) is None:
+                if default is bool:
+                    tmp_config[config_path[i]] = str(os.getenv(env, default)).lower() == "true"
+                else:
+                    tmp_config[config_path[i]] = os.getenv(env, default)
+
+            if tmp_config.get(config_path[i]) is None:
+                tmp_config[config_path[i]] = {}
+                tmp_config = tmp_config[config_path[i]]
+            else:
+                tmp_config = tmp_config[config_path[i]]
 
     def __init__(self, args: dict = None):
         if args is None:
@@ -33,41 +41,40 @@ class SourcePlusPlus(object):
         if os.path.exists(probe_config_file):
             probe_config = yaml.full_load(open(probe_config_file, "r"))
 
-        # ensure probe_config has required keys
-        if probe_config.get("spp") is None:
-            probe_config["spp"] = {}
-        if probe_config.get("skywalking") is None:
-            probe_config["skywalking"] = {}
-        if probe_config["skywalking"].get("collector") is None:
-            probe_config["skywalking"]["collector"] = {}
-        if probe_config["skywalking"].get("agent") is None:
-            probe_config["skywalking"]["agent"] = {}
-
-        # set default values
-        probe_config["spp"]["probe_id"] = self.get_config_value(
-            "SPP_PROBE_ID", probe_config["spp"].get("probe_id"), str(uuid.uuid4())
+        # set spp default values
+        self.__set_config_default(
+            probe_config, "spp.probe_id", "SPP_PROBE_ID",
+            str(uuid.uuid4())
         )
-        probe_config["spp"]["platform_host"] = self.get_config_value(
-            "SPP_PLATFORM_HOST", probe_config["spp"].get("platform_host"), "localhost"
+        self.__set_config_default(
+            probe_config, "spp.platform_host", "SPP_PLATFORM_HOST",
+            "localhost"
         )
-        probe_config["spp"]["platform_port"] = self.get_config_value(
-            "SPP_PLATFORM_PORT", probe_config["spp"].get("platform_port"), 12800
+        self.__set_config_default(
+            probe_config, "spp.platform_port", "SPP_PLATFORM_PORT",
+            12800
         )
-        probe_config["spp"]["verify_host"] = str(self.get_config_value(
-            "SPP_TLS_VERIFY_HOST", probe_config["spp"].get("verify_host"), True
-        )).lower() == "true"
-        probe_config["spp"]["ssl_enabled"] = str(self.get_config_value(
-            "SPP_HTTP_SSL_ENABLED", probe_config["spp"].get("ssl_enabled"), True
-        )).lower() == "true"
-        probe_config["skywalking"]["agent"]["service_name"] = self.get_config_value(
-            "SPP_SERVICE_NAME", probe_config["skywalking"]["agent"].get("service_name"), "spp"
+        self.__set_config_default(
+            probe_config, "spp.verify_host", "SPP_TLS_VERIFY_HOST",
+            True
+        )
+        self.__set_config_default(
+            probe_config, "spp.ssl_enabled", "SPP_HTTP_SSL_ENABLED",
+            True
+        )
+        self.__set_config_default(
+            probe_config, "skywalking.agent.service_name", "SPP_SERVICE_NAME",
+            "spp"
         )
 
-        skywalking_port = self.get_config_value("SPP_OAP_PORT", 11800, 11800)
-        probe_config["skywalking"]["collector"]["backend_service"] = self.get_config_value(
-            "SPP_SKYWALKING_BACKEND_SERVICE",
-            probe_config["skywalking"]["collector"].get("backend_service"),
-            probe_config["spp"]["platform_host"] + ":" + str(skywalking_port)
+        # set sw default values
+        self.__set_config_default(
+            probe_config, "skywalking.collector.backend_service", "SPP_SKYWALKING_BACKEND_SERVICE",
+            probe_config["spp"]["platform_host"] + ":11800"
+        )
+        self.__set_config_default(
+            probe_config, "skywalking.plugin.toolkit.log.transmit_formatted", "SPP_SKYWALKING_LOG_TRANSMIT_FORMATTED",
+            True
         )
 
         for key, val in args.items():
@@ -89,8 +96,8 @@ class SourcePlusPlus(object):
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
             log_reporter_active=True,
-            force_tls=self.probe_config["spp"]["ssl_enabled"] is True,
-            log_reporter_formatted=False
+            force_tls=self.probe_config["spp"]["ssl_enabled"],
+            log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
         )
         agent.start()
 

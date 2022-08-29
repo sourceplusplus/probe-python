@@ -1,0 +1,9 @@
+spp:
+  platform_host: "spp-platform"
+  platform_port: 12800
+  ssl_enabled: false
+skywalking:
+  logging:
+    level: "WARN"
+  agent:
+    service_name: "tutorial-jvm"
