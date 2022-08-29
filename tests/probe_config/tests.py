@@ -16,7 +16,7 @@ class TestSum(unittest.TestCase):
         self.assertEqual("localhost:11800", spp.probe_config["skywalking"]["collector"]["backend_service"])
         self.assertEqual("spp", spp.probe_config["skywalking"]["agent"]["service_name"])
 
-    @mock.patch.dict('os.environ', {'SPP_PROBE_CONFIG_FILE': 'resources/base-config.yml'})
+    @mock.patch.dict('os.environ', {'SPP_PROBE_CONFIG_FILE': 'probe_config/resources/base-config.yml'})
     def test_config_from_env(self):
         spp = SourcePlusPlus()
         self.assertEqual("spp-platform", spp.probe_config["spp"]["platform_host"])
