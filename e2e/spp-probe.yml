@@ -36,8 +36,6 @@ skywalking:
   logging:
     level: "INFO"
   agent:
-    is_cache_enhanced_class: true
-    class_cache_mode: "FILE"
     service_name: "spp"
   collector:
     backend_service: "spp-platform:11801"
