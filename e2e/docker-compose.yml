@@ -19,7 +19,6 @@ services:
     hostname: spp-platform
     ports:
       - "11800:11800"
-      - "11801:11801" #todo: shouldn't be necessary
       - "12800:12800"
     environment:
       - SPP_LOGGING_LEVEL=trace
