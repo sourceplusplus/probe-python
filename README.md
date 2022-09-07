@@ -27,9 +27,6 @@ Add `spp-probe.yml` to working directory (or set `SPP_PROBE_CONFIG_FILE` env):
 spp:
   platform_host: "localhost"
   ssl_enabled: false
-skywalking:
-  collector:
-    backend_service: "localhost:11800"
 ```
 
 Or construct with dict:
