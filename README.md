@@ -27,9 +27,6 @@ Add `spp-probe.yml` to working directory (or set `SPP_PROBE_CONFIG_FILE` env):
 spp:
   platform_host: "localhost"
   ssl_enabled: false
-skywalking:
-  collector:
-    backend_service: "localhost:11800"
 ```
 
 Or construct with dict:
@@ -38,8 +35,7 @@ Or construct with dict:
 from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus({
     "spp.platform_host": "localhost",
-    "spp.ssl_enabled": False,
-    "skywalking.collector.backend_service": "localhost:11800"
+    "spp.ssl_enabled": False
 }).attach()
 ```
 

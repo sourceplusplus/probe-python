@@ -37,8 +37,6 @@ skywalking:
     level: "INFO"
   agent:
     service_name: "spp"
-  collector:
-    backend_service: "spp-platform:11801"
   plugin:
     toolkit:
       log:
