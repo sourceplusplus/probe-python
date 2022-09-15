@@ -1,5 +1,6 @@
 import sys
 import threading
+import time
 
 from nopdb import nopdb
 from vertx import EventBus
@@ -9,6 +10,7 @@ from sourceplusplus.models.command.LiveInstrumentCommand import LiveInstrumentCo
 from sourceplusplus.models.instrument.LiveBreakpoint import LiveBreakpoint
 from sourceplusplus.models.instrument.LiveLog import LiveLog
 from sourceplusplus.models.instrument.LiveMeter import LiveMeter
+from sourceplusplus.models.instrument.common import LiveInstrument
 from sourceplusplus.models.instrument.common.LiveInstrumentType import LiveInstrumentType
 from sourceplusplus.models.instrument.common.LiveSourceLocation import LiveSourceLocation
 
@@ -17,12 +19,15 @@ class LiveInstrumentRemote(object):
     instruments = {}
     eb = None
     dbg = None
+    cleanupThread = None
 
     def __init__(self, eb: EventBus):
         LiveInstrumentRemote.eb = eb
         LiveInstrumentRemote.dbg = nopdb.get_nopdb()
         LiveInstrumentRemote.dbg.start()
         threading.settrace(sys.gettrace())
+        LiveInstrumentRemote.cleanupThread = threading.Thread(target=self.cleanup, daemon=True)
+        LiveInstrumentRemote.cleanupThread.start()
 
     def add_live_instrument(self, command: LiveInstrumentCommand):
         for inst_dict in command.instruments:
@@ -79,3 +84,18 @@ class LiveInstrumentRemote(object):
             self.add_live_instrument(command)
         elif command.command_type == CommandType.REMOVE_LIVE_INSTRUMENT:
             self.remove_live_instrument(command)
+
+    def cleanup(self):
+        while True:
+            time.sleep(1)
+            delete = []
+            for key, val in LiveInstrumentRemote.instruments.items():
+                instrument: LiveInstrument = val[1]
+                if instrument.expires_at is not None and instrument.expires_at <= round(time.time() * 1000):
+                    delete.append(key)
+            for key in delete:
+                instrument: LiveInstrument = LiveInstrumentRemote.instruments.pop(key)[1]
+                LiveInstrumentRemote.eb.send(address="spp.processor.status.live-instrument-removed", body={
+                    "instrument": instrument.to_json(),
+                    "occurredAt": round(time.time() * 1000)
+                })
