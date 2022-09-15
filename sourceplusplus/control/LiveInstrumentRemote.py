@@ -1,5 +1,6 @@
 import sys
 import threading
+import time
 
 from nopdb import nopdb
 from vertx import EventBus
@@ -17,12 +18,15 @@ class LiveInstrumentRemote(object):
     instruments = {}
     eb = None
     dbg = None
+    cleanupThread = None
 
     def __init__(self, eb: EventBus):
         LiveInstrumentRemote.eb = eb
         LiveInstrumentRemote.dbg = nopdb.get_nopdb()
         LiveInstrumentRemote.dbg.start()
         threading.settrace(sys.gettrace())
+        LiveInstrumentRemote.cleanupThread = threading.Thread(target=self.cleanup)
+        LiveInstrumentRemote.cleanupThread.start()
 
     def add_live_instrument(self, command: LiveInstrumentCommand):
         for inst_dict in command.instruments:
@@ -79,3 +83,12 @@ class LiveInstrumentRemote(object):
             self.add_live_instrument(command)
         elif command.command_type == CommandType.REMOVE_LIVE_INSTRUMENT:
             self.remove_live_instrument(command)
+
+    def cleanup(self):
+        while True:
+            delete = []
+            for key, val in LiveInstrumentRemote.instruments.items():
+                if "expires_at" in val[1] and val[1]["expires_at"] < round(time.time() * 1000):
+                    delete.append(key)
+            for key in delete:
+                del LiveInstrumentRemote.instruments[key]
