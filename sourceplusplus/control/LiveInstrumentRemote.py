@@ -10,6 +10,7 @@ from sourceplusplus.models.command.LiveInstrumentCommand import LiveInstrumentCo
 from sourceplusplus.models.instrument.LiveBreakpoint import LiveBreakpoint
 from sourceplusplus.models.instrument.LiveLog import LiveLog
 from sourceplusplus.models.instrument.LiveMeter import LiveMeter
+from sourceplusplus.models.instrument.common import LiveInstrument
 from sourceplusplus.models.instrument.common.LiveInstrumentType import LiveInstrumentType
 from sourceplusplus.models.instrument.common.LiveSourceLocation import LiveSourceLocation
 
@@ -25,7 +26,7 @@ class LiveInstrumentRemote(object):
         LiveInstrumentRemote.dbg = nopdb.get_nopdb()
         LiveInstrumentRemote.dbg.start()
         threading.settrace(sys.gettrace())
-        LiveInstrumentRemote.cleanupThread = threading.Thread(target=self.cleanup)
+        LiveInstrumentRemote.cleanupThread = threading.Thread(target=self.cleanup, daemon=True)
         LiveInstrumentRemote.cleanupThread.start()
 
     def add_live_instrument(self, command: LiveInstrumentCommand):
@@ -89,10 +90,11 @@ class LiveInstrumentRemote(object):
             time.sleep(1)
             delete = []
             for key, val in LiveInstrumentRemote.instruments.items():
-                if "expires_at" in val[1] and val[1]["expires_at"] < round(time.time() * 1000):
+                instrument: LiveInstrument = val[1]
+                if instrument.expires_at is not None and instrument.expires_at <= round(time.time() * 1000):
                     delete.append(key)
             for key in delete:
-                instrument = LiveInstrumentRemote.instruments.pop(key)
+                instrument: LiveInstrument = LiveInstrumentRemote.instruments.pop(key)[1]
                 LiveInstrumentRemote.eb.send(address="spp.processor.status.live-instrument-removed", body={
                     "instrument": instrument.to_json(),
                     "occurredAt": round(time.time() * 1000)
