@@ -86,9 +86,14 @@ class LiveInstrumentRemote(object):
 
     def cleanup(self):
         while True:
+            time.sleep(1)
             delete = []
             for key, val in LiveInstrumentRemote.instruments.items():
                 if "expires_at" in val[1] and val[1]["expires_at"] < round(time.time() * 1000):
                     delete.append(key)
             for key in delete:
-                del LiveInstrumentRemote.instruments[key]
+                instrument = LiveInstrumentRemote.instruments.pop(key)
+                LiveInstrumentRemote.eb.send(address="spp.processor.status.live-instrument-removed", body={
+                    "instrument": instrument.to_json(),
+                    "occurredAt": round(time.time() * 1000)
+                })
