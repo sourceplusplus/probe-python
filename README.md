@@ -1,4 +1,4 @@
-# ![](https://github.com/sourceplusplus/live-platform/blob/master/.github/media/sourcepp_logo.svg)
+# ![](https://github.com/sourceplusplus/sourceplusplus/blob/master/.github/media/sourcepp_logo.svg)
 
 [![License](https://img.shields.io/github/license/sourceplusplus/probe-python)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/sourceplusplus?color=blue)](https://pypi.org/project/sourceplusplus/)
@@ -6,7 +6,7 @@
 
 ## What is this?
 
-This project provides Python support to the [Source++](https://github.com/sourceplusplus/live-platform) open-source live coding platform.
+This project provides Python support to the [Source++](https://github.com/sourceplusplus/sourceplusplus) open-source live coding platform.
 
 ## Usage
 
@@ -39,4 +39,4 @@ SourcePlusPlus({
 
 ## Bugs & Features
 
-Bug reports and feature requests can be created [here](https://github.com/sourceplusplus/live-platform/issues).
+Bug reports and feature requests can be created [here](https://github.com/sourceplusplus/sourceplusplus/issues).
