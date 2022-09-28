@@ -26,7 +26,6 @@ Add `spp-probe.yml` to working directory (or set `SPP_PROBE_CONFIG_FILE` env):
 ```yml
 spp:
   platform_host: "localhost"
-  ssl_enabled: false
 ```
 
 Or construct with dict:
@@ -34,8 +33,7 @@ Or construct with dict:
 ```python
 from sourceplusplus.SourcePlusPlus import SourcePlusPlus
 SourcePlusPlus({
-    "spp.platform_host": "localhost",
-    "spp.ssl_enabled": False
+    "spp.platform_host": "localhost"
 }).attach()
 ```
 
