@@ -60,7 +60,7 @@ class SourcePlusPlus(object):
         )
         self.__set_config_default(
             probe_config, "spp.ssl_enabled", "SPP_HTTP_SSL_ENABLED",
-            True
+            False
         )
         self.__set_config_default(
             probe_config, "skywalking.agent.service_name", "SPP_SERVICE_NAME",

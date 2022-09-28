@@ -12,7 +12,7 @@ class TestSum(unittest.TestCase):
         self.assertEqual("localhost", spp.probe_config["spp"]["platform_host"])
         self.assertEqual(12800, spp.probe_config["spp"]["platform_port"])
         self.assertEqual(True, spp.probe_config["spp"]["verify_host"])
-        self.assertEqual(True, spp.probe_config["spp"]["ssl_enabled"])
+        self.assertEqual(False, spp.probe_config["spp"]["ssl_enabled"])
         self.assertIsNotNone(spp.probe_config["spp"]["probe_id"])
         self.assertEqual("localhost:11800", spp.probe_config["skywalking"]["collector"]["backend_service"])
         self.assertEqual("spp", spp.probe_config["skywalking"]["agent"]["service_name"])
