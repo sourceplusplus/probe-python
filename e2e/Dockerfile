@@ -14,7 +14,4 @@ COPY E2ETest.py .
 
 ADD ./spp-probe.yml .
 
-RUN mkdir config
-ADD ./config/spp-platform.crt ./config/
-
 CMD ["python", "E2ETest.py"]
