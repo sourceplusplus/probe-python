@@ -22,6 +22,9 @@ services:
       - "12800:12800"
     environment:
       - SPP_LOGGING_LEVEL=trace
+      - SPP_JWT_ENABLED=true
+      - SPP_HTTP_SSL_ENABLED=true
+      - SPP_GRPC_SSL_ENABLED=true
       - SW_CORE_GRPC_SSL_ENABLED=true
       - SW_CORE_GRPC_SSL_KEY_PATH=/skywalking/config/spp-platform.key
       - SW_CORE_GRPC_SSL_CERT_CHAIN_PATH=/skywalking/config/spp-platform.crt
