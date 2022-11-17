@@ -105,7 +105,7 @@ class SourcePlusPlus(object):
         config.init(
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
-            authentication=self.probe_config["skywalking"]["agent"]["authentication"],
+            authentication=self.probe_config["skywalking"]["agent"].get("authentication"),
             log_reporter_active=True,
             force_tls=self.probe_config["spp"]["ssl_enabled"],
             log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
