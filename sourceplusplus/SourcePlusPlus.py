@@ -139,9 +139,15 @@ class SourcePlusPlus(object):
             for key, val in self.probe_config["spp"].get("probe_metadata").items():
                 probe_metadata[key] = val
 
+        # add probe auth headers (if present)
+        headers = {}
+        if self.probe_config["spp"].get("authentication") is not None:
+            for key, val in self.probe_config["spp"].get("authentication").items():
+                headers[key] = val
+
         # send probe connected event
         reply_address = str(uuid.uuid4())
-        eb.send(address="spp.platform.status.probe-connected", body={
+        eb.send(address="spp.platform.status.probe-connected", headers=headers, body={
             "instanceId": self.probe_config["spp"]["probe_id"],
             "connectionTime": round(time.time() * 1000),
             "meta": probe_metadata
