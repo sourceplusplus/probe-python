@@ -150,12 +150,6 @@ class SourcePlusPlus(object):
     def __register_remotes(self, eb, reply_address, status):
         eb.unregister_handler(reply_address)
         eb.register_handler(
-            address="spp.probe.command.live-instrument-remote",
-            handler=lambda msg: self.instrument_remote.handle_instrument_command(
-                LiveInstrumentCommand.from_json(json.dumps(msg["body"]))
-            )
-        )
-        eb.register_handler(
             address="spp.probe.command.live-instrument-remote:" + self.probe_config["spp"]["probe_id"],
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
                 LiveInstrumentCommand.from_json(json.dumps(msg["body"]))
