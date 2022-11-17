@@ -7,7 +7,7 @@ import uuid
 
 import yaml
 from skywalking import config, agent
-from vertx import EventBus
+from vertx import EventBus, eventbus
 
 from sourceplusplus import __version__
 from .control.LiveInstrumentRemote import LiveInstrumentRemote
@@ -77,6 +77,16 @@ class SourcePlusPlus(object):
             True
         )
 
+        # setup agent authentication (if needed)
+        if probe_config["spp"].get("authentication") is not None:
+            client_id = probe_config["spp"]["authentication"]["client_id"]
+            client_secret = probe_config["spp"]["authentication"]["client_secret"]
+            tenant_id = probe_config["spp"]["authentication"].get("tenant_id")
+            if tenant_id is not None and tenant_id != "":
+                probe_config["skywalking"]["agent"]["authentication"] = f"{client_id}:{client_secret}:{tenant_id}"
+            else:
+                probe_config["skywalking"]["agent"]["authentication"] = f"{client_id}:{client_secret}"
+
         for key, val in args.items():
             tmp_config = probe_config
             loc = key.split(".")
@@ -95,6 +105,7 @@ class SourcePlusPlus(object):
         config.init(
             collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
             service_name=self.probe_config["skywalking"]["agent"]["service_name"],
+            authentication=self.probe_config["skywalking"]["agent"]["authentication"],
             log_reporter_active=True,
             force_tls=self.probe_config["spp"]["ssl_enabled"],
             log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
@@ -151,13 +162,30 @@ class SourcePlusPlus(object):
             "instanceId": self.probe_config["spp"]["probe_id"],
             "connectionTime": round(time.time() * 1000),
             "meta": probe_metadata
-        }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, msg["body"]))
+        }, reply_handler=lambda msg: self.__register_remotes(eb, reply_address, headers, msg["body"]))
 
-    def __register_remotes(self, eb, reply_address, status):
+    def __register_remotes(self, eb, reply_address, headers, status):
         eb.unregister_handler(reply_address)
-        eb.register_handler(
+        self.register_handler(
+            eb=eb,
             address="spp.probe.command.live-instrument-remote:" + self.probe_config["spp"]["probe_id"],
+            headers=headers,
             handler=lambda msg: self.instrument_remote.handle_instrument_command(
                 LiveInstrumentCommand.from_json(json.dumps(msg["body"]))
             )
         )
+
+    # todo: needed since the EventBus class does not support registering handlers with headers.
+    #  platform should require connect message before all messages, then headers in register message are not needed
+    # noinspection PyProtectedMember
+    @staticmethod
+    def register_handler(eb, address, headers, handler):
+        if not eb._address_registered_at_server(address):
+            try:
+                eb._check_closed()
+                message = eventbus.create_message("register", address, headers)
+                eb._send_frame(message)
+            except Exception as e:
+                print("Registration failed: " + str(e))
+                raise e
+        eb._register_local(address, handler, True)
