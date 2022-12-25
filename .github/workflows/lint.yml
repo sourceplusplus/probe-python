@@ -13,12 +13,12 @@ on:
 jobs:
   flake8:
     name: Flake8
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6.x'
+          python-version: '3.6'
       - name: Install Flake8
         run: |
           python -m pip install --upgrade pip
