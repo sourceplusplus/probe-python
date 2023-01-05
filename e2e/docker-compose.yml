@@ -13,7 +13,7 @@ services:
     environment:
       - SPP_PLATFORM_HOST=spp-platform
   spp-platform:
-    image: sourceplusplus/spp-platform:0.7.5
+    image: sourceplusplus/spp-platform:0.7.6
     container_name: spp-platform
     hostname: spp-platform
     ports:
