@@ -28,6 +28,5 @@ tasks {
 
 dockerCompose {
     dockerComposeWorkingDirectory.set(File("./e2e"))
-    removeVolumes.set(true)
     waitForTcpPorts.set(false)
 }
