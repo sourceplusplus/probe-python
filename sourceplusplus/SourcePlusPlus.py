@@ -103,12 +103,12 @@ class SourcePlusPlus(object):
 
     def attach(self):
         config.init(
-            collector_address=self.probe_config["skywalking"]["collector"]["backend_service"],
-            service_name=self.probe_config["skywalking"]["agent"]["service_name"],
-            authentication=self.probe_config["skywalking"]["agent"].get("authentication"),
-            log_reporter_active=True,
-            force_tls=self.probe_config["spp"]["ssl_enabled"],
-            log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
+            agent_collector_backend_services=self.probe_config["skywalking"]["collector"]["backend_service"],
+            agent_name=self.probe_config["skywalking"]["agent"]["service_name"],
+            agent_authentication=self.probe_config["skywalking"]["agent"].get("authentication"),
+            agent_log_reporter_active=True,
+            agent_force_tls=self.probe_config["spp"]["ssl_enabled"],
+            agent_log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
         )
         agent.start()
 
@@ -141,8 +141,8 @@ class SourcePlusPlus(object):
             "language": "python",
             "probe_version": __version__,
             "python_version": sys.version,
-            "service": config.service_name,
-            "service_instance": config.service_instance
+            "service": config.agent_name,
+            "service_instance": config.agent_instance_name
         }
 
         # add hardcoded probe meta data (if present)

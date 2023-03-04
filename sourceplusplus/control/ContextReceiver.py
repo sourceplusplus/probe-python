@@ -62,8 +62,8 @@ def apply_log(live_log_id, globals, locals):
     sw_context = get_context()
     log_data = LogData(
         timestamp=round(time.time() * 1000),
-        service=config.service_name,
-        serviceInstance=config.service_instance,
+        service=config.agent_name,
+        serviceInstance=config.agent_instance_name,
         body=LogDataBody(
             type='text',
             text=TextLog(text=live_log.log_format)
@@ -75,7 +75,7 @@ def apply_log(live_log_id, globals, locals):
         ),
         tags=log_tags,
     )
-    agent.archive_log(log_data)
+    agent.agent.archive_log(log_data)
 
     if live_log.is_finished():
         try:
