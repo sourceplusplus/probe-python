@@ -102,13 +102,14 @@ class SourcePlusPlus(object):
         self.instrument_remote = None
 
     def attach(self):
+        probe_config = self.probe_config
         config.init(
-            agent_collector_backend_services=self.probe_config["skywalking"]["collector"]["backend_service"],
-            agent_name=self.probe_config["skywalking"]["agent"]["service_name"],
-            agent_authentication=self.probe_config["skywalking"]["agent"].get("authentication"),
+            agent_collector_backend_services=probe_config["skywalking"]["collector"]["backend_service"],
+            agent_name=probe_config["skywalking"]["agent"]["service_name"],
+            agent_authentication=probe_config["skywalking"]["agent"].get("authentication"),
             agent_log_reporter_active=True,
-            agent_force_tls=self.probe_config["spp"]["ssl_enabled"],
-            agent_log_reporter_formatted=self.probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
+            agent_force_tls=probe_config["spp"]["ssl_enabled"],
+            agent_log_reporter_formatted=probe_config["skywalking"]["plugin"]["toolkit"]["log"]["transmit_formatted"]
         )
         agent.start()
 
