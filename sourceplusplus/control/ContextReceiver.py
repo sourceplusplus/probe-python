@@ -71,7 +71,7 @@ def apply_log(live_log_id, globals, locals):
         traceContext=TraceContext(
             traceId=str(sw_context.segment.related_traces[0]),
             traceSegmentId=str(sw_context.segment.segment_id),
-            spanId=sw_context.active_span().sid if sw_context.active_span() else -1
+            spanId=sw_context.active_span.sid if sw_context.active_span else -1
         ),
         tags=log_tags,
     )
