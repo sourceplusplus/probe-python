@@ -62,8 +62,8 @@ def apply_log(live_log_id, globals, locals):
     sw_context = get_context()
     log_data = LogData(
         timestamp=round(time.time() * 1000),
-        service=config.service_name,
-        serviceInstance=config.service_instance,
+        service=config.agent_name,
+        serviceInstance=config.agent_instance_name,
         body=LogDataBody(
             type='text',
             text=TextLog(text=live_log.log_format)
@@ -71,11 +71,11 @@ def apply_log(live_log_id, globals, locals):
         traceContext=TraceContext(
             traceId=str(sw_context.segment.related_traces[0]),
             traceSegmentId=str(sw_context.segment.segment_id),
-            spanId=sw_context.active_span().sid if sw_context.active_span() else -1
+            spanId=sw_context.active_span.sid if sw_context.active_span else -1
         ),
         tags=log_tags,
     )
-    agent.archive_log(log_data)
+    agent.agent.archive_log(log_data)
 
     if live_log.is_finished():
         try:
