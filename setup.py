@@ -10,7 +10,7 @@ setup(name='sourceplusplus',
       license='Apache License, Version 2.0',
       packages=setuptools.find_packages(),
       install_requires=['vertx-eventbus-client==1.0.0',
-                        'apache-skywalking==1.0.0',
+                        'apache-skywalking==1.0.1',
                         'nopdb==0.2.0',
                         'pyhumps==3.7.2',
                         'PyYAML==6.0'])
