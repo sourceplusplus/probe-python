@@ -91,10 +91,10 @@ jobs:
           resp=$(spp-cli -a change-me get instruments) && [[ $resp == "[ ]" ]] && echo $resp || (echo $resp && exit 1)
 
       - run: ./gradlew composeLogs
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
 
       - name: Upload docker logs artifact
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v3
         with:
           name: docker-logs
