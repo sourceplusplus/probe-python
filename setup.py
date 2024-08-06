@@ -13,4 +13,4 @@ setup(name='sourceplusplus',
                         'apache-skywalking==1.0.1',
                         'nopdb==0.2.0',
                         'pyhumps==3.8.0',
-                        'PyYAML==6.0'])
+                        'PyYAML==6.0.2'])
