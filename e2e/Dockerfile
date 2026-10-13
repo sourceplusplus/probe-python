@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.15
 
 WORKDIR /usr/local/bin
 
